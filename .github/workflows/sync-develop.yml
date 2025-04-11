@@ -1,0 +1,36 @@
+name: Sync Develop to Main
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history so create-pull-request can determine changes
+          fetch-depth: 0 
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Uses the default GitHub token
+          commit-message: "chore: sync develop into main"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: develop # The branch to merge FROM
+          base: master   # The branch to merge INTO
+          delete-branch: false # Don't delete develop after merging PR
+          title: 'Sync develop branch to master'
+          body: |
+            Automated PR to sync changes from the `develop` branch to the `master` branch.
+            Please review the changes before merging.
+          labels: automated-pr, sync
+          assignees: ${{ github.actor }} # Assign the user who pushed to develop
+          reviewers: '' # Optional: add reviewers
+          draft: false 

@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "lint": "biome check ./src ./tests",
     "format": "biome format --write ./src ./tests",
-    "format:check": "biome format ./src ./tests"
+    "format:check": "biome format ./src ./tests",
+    "prepare": "husky"
   },
   "keywords": [
     "mcp",
@@ -21,7 +22,7 @@
     "api"
   ],
   "author": "",
-  "license": "MIT", 
+  "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.9.0",
     "zod": "^3.23.8"
@@ -29,10 +30,18 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^20.12.12",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.1",
     "typescript": "^5.4.5",
     "vitest": "^3.1.1"
   },
   "engines": {
     "node": ">=20"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": [
+      "biome check --apply --no-errors-on-unmatched",
+      "git add" 
+    ]
   }
 }

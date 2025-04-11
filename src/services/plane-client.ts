@@ -1,7 +1,7 @@
 import { McpError } from "@modelcontextprotocol/sdk/types.js";
 
-
-const BASE_URL = process.env.PLANE_API_BASE_URL || "https://app.plane.so/api/v1";
+const BASE_URL =
+  process.env.PLANE_API_BASE_URL || "https://app.plane.so/api/v1";
 const API_KEY = process.env.PLANE_API_KEY;
 
 /**
@@ -18,7 +18,7 @@ export class PlaneClient {
 
     if (!this.apiKey) {
       console.warn(
-        "WARN: PLANE_API_KEY environment variable is not set. Plane.so API calls will likely fail."
+        "WARN: PLANE_API_KEY environment variable is not set. Plane.so API calls will likely fail.",
       );
       // Consider throwing an error here if the API key is strictly required for all operations
       // throw new Error("PLANE_API_KEY environment variable is not set.");
@@ -34,7 +34,11 @@ export class PlaneClient {
    * @returns The JSON response from the API.
    * @throws McpError if the request fails or the API returns an error status.
    */
-  async request<T>(endpoint: string, options: RequestInit, params: Record<string, string> = {}): Promise<T> {
+  async request<T>(
+    endpoint: string,
+    options: RequestInit,
+    params: Record<string, string> = {},
+  ): Promise<T> {
     let url = `${this.baseUrl}${endpoint}`;
 
     // Replace path parameters
@@ -46,8 +50,12 @@ export class PlaneClient {
     if (this.apiKey) {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
     }
-    if (options.method && options.method.toUpperCase() !== "GET" && options.method.toUpperCase() !== "HEAD") {
-       headers.set("Content-Type", "application/json");
+    if (
+      options.method &&
+      options.method.toUpperCase() !== "GET" &&
+      options.method.toUpperCase() !== "HEAD"
+    ) {
+      headers.set("Content-Type", "application/json");
     }
 
     try {
@@ -66,7 +74,7 @@ export class PlaneClient {
         console.error(`Plane API Error (${response.status}):`, errorBody);
         throw new McpError(
           response.status,
-          `Plane API request failed with status ${response.status}: ${JSON.stringify(errorBody) || response.statusText}`
+          `Plane API request failed with status ${response.status}: ${JSON.stringify(errorBody) || response.statusText}`,
         );
       }
 
@@ -80,14 +88,17 @@ export class PlaneClient {
       if (error instanceof McpError) {
         throw error; // Re-throw known MCP errors
       }
-      console.error("Network or unexpected error during Plane API request:", error);
+      console.error(
+        "Network or unexpected error during Plane API request:",
+        error,
+      );
       throw new McpError(
         500,
-        `Failed to make request to Plane API: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to make request to Plane API: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
 }
 
 // Export a singleton instance
-export const planeClient = new PlaneClient(); 
+export const planeClient = new PlaneClient();

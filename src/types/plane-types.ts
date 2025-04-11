@@ -71,4 +71,4 @@ export interface UpdatePlaneIssuePayload {
   labels?: string[];
   parent?: string | null;
   // Add other update-specific fields
-} 
+}

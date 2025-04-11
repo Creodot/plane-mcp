@@ -30,4 +30,4 @@ async function main() {
 main().catch((err) => {
   console.error("Unhandled error during server startup:", err);
   process.exit(1);
-}); 
+});

@@ -15,4 +15,4 @@ export function registerAllTools(server: McpServer) {
   // ... register other tools
 
   console.log("Tools registered.");
-} 
+}

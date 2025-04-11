@@ -15,12 +15,7 @@
     "format:check": "biome format ./src ./tests",
     "prepare": "husky"
   },
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "plane.so",
-    "api"
-  ],
+  "keywords": ["mcp", "model-context-protocol", "plane.so", "api"],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -40,8 +35,9 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
+      "npm run format && npm run lint",
       "biome check --apply --no-errors-on-unmatched",
-      "git add" 
+      "git add"
     ]
   }
 }

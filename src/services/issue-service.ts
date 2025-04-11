@@ -1,7 +1,12 @@
+import type {
+  CreatePlaneIssuePayload,
+  PlaneIssue,
+  UpdatePlaneIssuePayload,
+} from "../types/plane-types.js";
 import { planeClient } from "./plane-client.js";
-import type { CreatePlaneIssuePayload, PlaneIssue, UpdatePlaneIssuePayload } from "../types/plane-types.js";
 
-const BASE_ISSUE_PATH = "/workspaces/{workspace_slug}/projects/{project_id}/issues";
+const BASE_ISSUE_PATH =
+  "/workspaces/{workspace_slug}/projects/{project_id}/issues";
 
 /**
  * Service class for interacting with Plane.so Issue endpoints.
@@ -15,12 +20,20 @@ export class IssueService {
    * @param issueId - The ID of the issue to retrieve.
    * @returns The PlaneIssue object.
    */
-  async getIssue(workspaceSlug: string, projectId: string, issueId: string): Promise<PlaneIssue> {
+  async getIssue(
+    workspaceSlug: string,
+    projectId: string,
+    issueId: string,
+  ): Promise<PlaneIssue> {
     const endpoint = `${BASE_ISSUE_PATH}/{issue_id}`;
     return planeClient.request<PlaneIssue>(
       endpoint,
       { method: "GET" },
-      { workspace_slug: workspaceSlug, project_id: projectId, issue_id: issueId }
+      {
+        workspace_slug: workspaceSlug,
+        project_id: projectId,
+        issue_id: issueId,
+      },
     );
   }
 
@@ -32,7 +45,11 @@ export class IssueService {
    * @param payload - The data for the new issue.
    * @returns The newly created PlaneIssue object.
    */
-  async createIssue(workspaceSlug: string, projectId: string, payload: CreatePlaneIssuePayload): Promise<PlaneIssue> {
+  async createIssue(
+    workspaceSlug: string,
+    projectId: string,
+    payload: CreatePlaneIssuePayload,
+  ): Promise<PlaneIssue> {
     // Ensure project ID is in the payload as it seems required by Plane API for creation
     if (!payload.project) {
       payload.project = projectId;
@@ -43,7 +60,7 @@ export class IssueService {
         method: "POST",
         body: JSON.stringify(payload),
       },
-      { workspace_slug: workspaceSlug, project_id: projectId }
+      { workspace_slug: workspaceSlug, project_id: projectId },
     );
   }
 
@@ -60,7 +77,7 @@ export class IssueService {
     workspaceSlug: string,
     projectId: string,
     issueId: string,
-    payload: UpdatePlaneIssuePayload
+    payload: UpdatePlaneIssuePayload,
   ): Promise<PlaneIssue> {
     const endpoint = `${BASE_ISSUE_PATH}/{issue_id}`;
     return planeClient.request<PlaneIssue>(
@@ -69,10 +86,14 @@ export class IssueService {
         method: "PATCH", // Or PUT depending on the API design
         body: JSON.stringify(payload),
       },
-      { workspace_slug: workspaceSlug, project_id: projectId, issue_id: issueId }
+      {
+        workspace_slug: workspaceSlug,
+        project_id: projectId,
+        issue_id: issueId,
+      },
     );
   }
 }
 
 // Export a singleton instance
-export const issueService = new IssueService(); 
+export const issueService = new IssueService();

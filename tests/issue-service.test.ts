@@ -57,7 +57,7 @@ describe("IssueService", () => {
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      `/workspaces/${mockWorkspaceSlug}/projects/${mockProjectId}/issues/${mockIssueId}`,
+      "/workspaces/{workspace_slug}/projects/{project_id}/issues/{issue_id}",
       { method: "GET" },
       {
         workspace_slug: mockWorkspaceSlug,
@@ -105,7 +105,7 @@ describe("IssueService", () => {
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      `/workspaces/${mockWorkspaceSlug}/projects/${mockProjectId}/issues`,
+      "/workspaces/{workspace_slug}/projects/{project_id}/issues",
       {
         method: "POST",
         body: JSON.stringify(payload), // Service ensures project is in payload
@@ -155,7 +155,7 @@ describe("IssueService", () => {
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      `/workspaces/${mockWorkspaceSlug}/projects/${mockProjectId}/issues`,
+      "/workspaces/{workspace_slug}/projects/{project_id}/issues",
       {
         method: "POST",
         body: JSON.stringify(expectedPayloadWithProject), // Check if project was added
@@ -199,7 +199,7 @@ describe("IssueService", () => {
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      `/workspaces/${mockWorkspaceSlug}/projects/${mockProjectId}/issues/${mockIssueId}`,
+      "/workspaces/{workspace_slug}/projects/{project_id}/issues/{issue_id}",
       {
         method: "PATCH",
         body: JSON.stringify(payload),

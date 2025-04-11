@@ -1,0 +1,38 @@
+{
+  "name": "plane-mcp",
+  "version": "0.1.0",
+  "description": "MCP Server for interacting with the Plane.so API",
+  "main": "dist/mcp-server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file=.env dist/mcp-server.js",
+    "build": "tsc",
+    "start": "node --env-file=.env dist/mcp-server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check ./src ./tests",
+    "format": "biome format --write ./src ./tests",
+    "format:check": "biome format ./src ./tests"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "plane.so",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT", 
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^20.12.12",
+    "typescript": "^5.4.5",
+    "vitest": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,6 +1,6 @@
-import { WORKSPACE_SLUG } from "@/configs/env";
-import { planeClient } from "@/plane-client";
-import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types";
+import { WORKSPACE_SLUG } from "@/configs/env.js";
+import { planeClient } from "@/plane-client.js";
+import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types.js";
 
 const BASE_PROJECT_PATH = `/workspaces/${WORKSPACE_SLUG}/projects`;
 

@@ -2,9 +2,9 @@ import {
   CreateProjectToolSchema,
   ProjectIdentifierSchema,
   UpdateProjectToolSchema,
-} from "@/schemas/project.schemas";
-import { projectService } from "@/services/project.service";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+} from "@/schemas/project.schemas.js";
+import { projectService } from "@/services/project.service.js";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import type { z } from "zod";
 
 // Shared type for handler results
@@ -92,10 +92,26 @@ const handleDeleteProject = async (
 };
 
 // Function to register all project tools with the MCP server
-export function registerProjectTools(server: McpServer) {
-  server.tool("plane_list_projects", ProjectIdentifierSchema.shape, handleListProjects);
-  server.tool("plane_get_project", ProjectIdentifierSchema.shape, handleGetProject);
-  server.tool("plane_create_project", CreateProjectToolSchema.shape, handleCreateProject);
-  server.tool("plane_update_project", UpdateProjectToolSchema.shape, handleUpdateProject);
-  server.tool("plane_delete_project", ProjectIdentifierSchema.shape, handleDeleteProject);
+export function registerProjectTools(server: Server) {
+  server.registerCapabilities(
+    "plane_list_projects",
+    ProjectIdentifierSchema.shape,
+    handleListProjects,
+  );
+  server.registerCapabilities("plane_get_project", ProjectIdentifierSchema.shape, handleGetProject);
+  server.registerCapabilities(
+    "plane_create_project",
+    CreateProjectToolSchema.shape,
+    handleCreateProject,
+  );
+  server.registerCapabilities(
+    "plane_update_project",
+    UpdateProjectToolSchema.shape,
+    handleUpdateProject,
+  );
+  server.registerCapabilities(
+    "plane_delete_project",
+    ProjectIdentifierSchema.shape,
+    handleDeleteProject,
+  );
 }

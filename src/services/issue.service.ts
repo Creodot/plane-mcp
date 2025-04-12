@@ -1,6 +1,6 @@
-import { WORKSPACE_SLUG } from "@/configs/env";
-import { planeClient } from "@/plane-client";
-import type { CreateIssuePayload, Issue, UpdateIssuePayload } from "@/types/issue.types";
+import { WORKSPACE_SLUG } from "@/configs/env.js";
+import { planeClient } from "@/plane-client.js";
+import type { CreateIssuePayload, Issue, UpdateIssuePayload } from "@/types/issue.types.js";
 
 const BASE_ISSUE_PATH = `/workspaces/${WORKSPACE_SLUG}/projects/{project_id}/issues`;
 

@@ -2,9 +2,9 @@ import {
   CreateIssueToolSchema,
   IssueIdentifierSchema,
   UpdateIssueToolSchema,
-} from "@/schemas/issue.schemas";
-import { issueService } from "@/services/issue.service";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+} from "@/schemas/issue.schemas.js";
+import { issueService } from "@/services/issue.service.js";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import type { z } from "zod";
 
 type HandlerResult = {
@@ -66,8 +66,8 @@ const handleUpdateIssue = async (
   };
 };
 
-export function registerIssueTools(server: McpServer) {
-  server.tool("plane_create_issue", CreateIssueToolSchema.shape, handleCreateIssue);
-  server.tool("plane_get_issue", IssueIdentifierSchema.shape, handleGetIssue);
-  server.tool("plane_update_issue", UpdateIssueToolSchema.shape, handleUpdateIssue);
+export function registerIssueTools(server: Server) {
+  server.registerCapabilities("plane_create_issue", CreateIssueToolSchema.shape, handleCreateIssue);
+  server.registerCapabilities("plane_get_issue", IssueIdentifierSchema.shape, handleGetIssue);
+  server.registerCapabilities("plane_update_issue", UpdateIssueToolSchema.shape, handleUpdateIssue);
 }

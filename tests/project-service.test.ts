@@ -1,10 +1,10 @@
-import { planeClient } from "@/plane-client";
-import { projectService } from "@/services/project.service";
-import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types";
+import { planeClient } from "@/plane-client.js";
+import { projectService } from "@/services/project.service.js";
+import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock the planeClient
-vi.mock("@/plane-client", () => ({
+vi.mock("@/plane-client.js", () => ({
   planeClient: {
     request: vi.fn(),
   },

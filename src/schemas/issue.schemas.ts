@@ -1,4 +1,4 @@
-import { Priority } from "@/types/issue.types";
+import { Priority } from "@/types/issue.types.js";
 import { z } from "zod";
 
 export const IssueIdentifierSchema = z.object({

@@ -1,4 +1,4 @@
-import { API_KEY, BASE_URL } from "@/configs/env";
+import { API_KEY, BASE_URL } from "@/configs/env.js";
 import { McpError } from "@modelcontextprotocol/sdk/types.js";
 
 /**

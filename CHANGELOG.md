@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0] - 2025-04-12
+
+### Added
+- Added project management capabilities based on Plane API:
+  - List, Get, Create, Update, Delete projects.
+  - Defined TypeScript types (`Project`, `CreateProjectPayload`, `UpdateProjectPayload`) in `src/types/project.types.ts`.
+  - Defined Zod schemas (`ProjectIdentifierSchema`, `CreateProjectToolSchema`, etc.) in `src/schemas/project.schemas.ts`.
+  - Implemented `ProjectService` in `src/services/project.service.ts` for API interactions.
+  - Registered MCP tools (`plane_list_projects`, `plane_get_project`, etc.) in `src/tools/project.tools.ts`.
+  - Added unit tests for `ProjectService` in `tests/project-service.test.ts`.
+
+
 ## [0.1.1] - 2025-04-12
 
 ### Refacto

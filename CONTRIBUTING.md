@@ -12,8 +12,8 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ### Reporting Bugs
 
-*   **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/YOUR_USERNAME/plane-mcp-server/issues).
-*   If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/YOUR_USERNAME/plane-mcp-server/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+*   **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/Creodot/plane-mcp-server/issues).
+*   If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/Creodot/plane-mcp-server/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
 *   Use the "Bug Report" issue template if available.
 
 ### Suggesting Enhancements

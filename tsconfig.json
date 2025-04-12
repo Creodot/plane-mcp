@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    /* Base Options */
     "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "ES2022",
@@ -8,24 +7,19 @@
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
-
-    /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitAny": true,
-
-    /* If transpiling with TypeScript */
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
     "outDir": "dist",
     "sourceMap": true,
-
-    /* If your code runs in the DOM */
-    // "lib": ["es2022", "dom", "dom.iterable"],
-
-    /* If your code doesn't run in the DOM */
-    "lib": ["es2022", "dom", "dom.iterable"]
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", "dist"]
-} 
+}

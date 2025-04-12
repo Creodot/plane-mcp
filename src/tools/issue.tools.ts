@@ -1,11 +1,11 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { z } from "zod";
 import {
   CreateIssueToolSchema,
   IssueIdentifierSchema,
   UpdateIssueToolSchema,
-} from "../schemas/issue.schemas.js";
-import { issueService } from "../services/issue.service.js";
+} from "@/schemas/issue.schemas";
+import { issueService } from "@/services/issue.service";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { z } from "zod";
 
 type HandlerResult = {
   content: { type: "text"; text: string }[];
@@ -16,9 +16,9 @@ type HandlerResult = {
 const handleGetIssue = async (
   args: z.infer<typeof IssueIdentifierSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, project_id, issue_id } = args;
+  const { project_id, issue_id } = args;
 
-  const issue = await issueService.getIssue(workspace_slug, project_id, issue_id);
+  const issue = await issueService.getIssue(project_id, issue_id);
 
   return {
     content: [
@@ -33,11 +33,11 @@ const handleGetIssue = async (
 const handleCreateIssue = async (
   args: z.infer<typeof CreateIssueToolSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, project_id, payload } = args;
+  const { project_id, payload } = args;
 
   const issueData = { ...payload, project: project_id };
 
-  const newIssue = await issueService.createIssue(workspace_slug, project_id, issueData);
+  const newIssue = await issueService.createIssue(project_id, issueData);
 
   return {
     content: [
@@ -52,14 +52,9 @@ const handleCreateIssue = async (
 const handleUpdateIssue = async (
   args: z.infer<typeof UpdateIssueToolSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, project_id, issue_id, payload } = args;
+  const { project_id, issue_id, payload } = args;
 
-  const updatedIssue = await issueService.updateIssue(
-    workspace_slug,
-    project_id,
-    issue_id,
-    payload,
-  );
+  const updatedIssue = await issueService.updateIssue(project_id, issue_id, payload);
 
   return {
     content: [

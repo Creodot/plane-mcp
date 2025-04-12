@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerIssueTools } from "./tools/issue.tools.js";
-import { registerProjectTools } from "./tools/project.tools.js";
+import { registerIssueTools } from "./tools/issue.tools";
+import { registerProjectTools } from "./tools/project.tools";
 
 /**
  * Registers all available MCP tools with the server instance.

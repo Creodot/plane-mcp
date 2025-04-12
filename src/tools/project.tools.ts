@@ -1,12 +1,11 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { z } from "zod";
 import {
   CreateProjectToolSchema,
   ProjectIdentifierSchema,
   UpdateProjectToolSchema,
-  WorkspaceIdentifierSchema,
-} from "../schemas/project.schemas.js";
-import { projectService } from "../services/project.service.js";
+} from "@/schemas/project.schemas";
+import { projectService } from "@/services/project.service";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { z } from "zod";
 
 // Shared type for handler results
 type HandlerResult = {
@@ -16,11 +15,8 @@ type HandlerResult = {
 };
 
 // Handler for listing projects
-const handleListProjects = async (
-  args: z.infer<typeof WorkspaceIdentifierSchema>,
-): Promise<HandlerResult> => {
-  const { workspace_slug } = args;
-  const projects = await projectService.listProjects(workspace_slug);
+const handleListProjects = async (): Promise<HandlerResult> => {
+  const projects = await projectService.listProjects();
   return {
     content: [
       {
@@ -35,8 +31,8 @@ const handleListProjects = async (
 const handleGetProject = async (
   args: z.infer<typeof ProjectIdentifierSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, project_id } = args;
-  const project = await projectService.getProject(workspace_slug, project_id);
+  const { project_id } = args;
+  const project = await projectService.getProject(project_id);
   return {
     content: [
       {
@@ -51,8 +47,8 @@ const handleGetProject = async (
 const handleCreateProject = async (
   args: z.infer<typeof CreateProjectToolSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, payload } = args;
-  const newProject = await projectService.createProject(workspace_slug, payload);
+  const { payload } = args;
+  const newProject = await projectService.createProject(payload);
   return {
     content: [
       {
@@ -67,8 +63,8 @@ const handleCreateProject = async (
 const handleUpdateProject = async (
   args: z.infer<typeof UpdateProjectToolSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, project_id, payload } = args;
-  const updatedProject = await projectService.updateProject(workspace_slug, project_id, payload);
+  const { project_id, payload } = args;
+  const updatedProject = await projectService.updateProject(project_id, payload);
   return {
     content: [
       {
@@ -83,13 +79,13 @@ const handleUpdateProject = async (
 const handleDeleteProject = async (
   args: z.infer<typeof ProjectIdentifierSchema>,
 ): Promise<HandlerResult> => {
-  const { workspace_slug, project_id } = args;
-  await projectService.deleteProject(workspace_slug, project_id);
+  const { project_id } = args;
+  await projectService.deleteProject(project_id);
   return {
     content: [
       {
         type: "text",
-        text: `Project with ID ${project_id} in workspace ${workspace_slug} has been deleted.`,
+        text: `Project with ID ${project_id} has been deleted.`,
       },
     ],
   };
@@ -97,7 +93,7 @@ const handleDeleteProject = async (
 
 // Function to register all project tools with the MCP server
 export function registerProjectTools(server: McpServer) {
-  server.tool("plane_list_projects", WorkspaceIdentifierSchema.shape, handleListProjects);
+  server.tool("plane_list_projects", ProjectIdentifierSchema.shape, handleListProjects);
   server.tool("plane_get_project", ProjectIdentifierSchema.shape, handleGetProject);
   server.tool("plane_create_project", CreateProjectToolSchema.shape, handleCreateProject);
   server.tool("plane_update_project", UpdateProjectToolSchema.shape, handleUpdateProject);

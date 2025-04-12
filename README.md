@@ -117,8 +117,8 @@ Updates an existing issue in a project.
 1.  Clone the repository:
     ```bash
     # Replace with your fork or the main repo URL
-    git clone https://github.com/Creodot/plane-mcp.git
-    cd plane-mcp
+    git clone https://github.com/Creodot/plane-mcp-server.git
+    cd plane-mcp-server
     ```
 2.  Install dependencies:
     ```bash

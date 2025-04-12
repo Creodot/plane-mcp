@@ -1,12 +1,7 @@
 import { z } from "zod";
 
-// Schema for identifying a workspace, used in several project operations
-export const WorkspaceIdentifierSchema = z.object({
-  workspace_slug: z.string().describe("The slug of the workspace."),
-});
-
 // Schema for identifying a specific project within a workspace
-export const ProjectIdentifierSchema = WorkspaceIdentifierSchema.extend({
+export const ProjectIdentifierSchema = z.object({
   project_id: z.string().uuid().describe("The unique ID of the project."),
 });
 
@@ -56,7 +51,7 @@ export const CreatePlaneProjectPayloadSchema = z.object({
 });
 
 // Schema for the complete tool input when creating a project
-export const CreateProjectToolSchema = WorkspaceIdentifierSchema.extend({
+export const CreateProjectToolSchema = z.object({
   payload: CreatePlaneProjectPayloadSchema.describe("The data for the new project."),
 });
 

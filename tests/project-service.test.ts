@@ -1,21 +1,16 @@
+import { planeClient } from "@/plane-client";
+import { projectService } from "@/services/project.service";
+import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { planeClient } from "../src/plane-client.js";
-import { projectService } from "../src/services/project.service.js";
-import type {
-  CreateProjectPayload,
-  Project,
-  UpdateProjectPayload,
-} from "../src/types/project.types.js";
 
 // Mock the planeClient
-vi.mock("../src/plane-client.js", () => ({
+vi.mock("@/plane-client", () => ({
   planeClient: {
     request: vi.fn(),
   },
 }));
 
 describe("ProjectService", () => {
-  const mockWorkspaceSlug = "test-workspace";
   const mockProjectId = "proj-789";
   const mockProjectData: Project = {
     id: mockProjectId,
@@ -45,7 +40,7 @@ describe("ProjectService", () => {
     close_in: 0,
     created_by: "user-1",
     updated_by: "user-1",
-    workspace: mockWorkspaceSlug,
+    workspace: "test-workspace",
     default_assignee: null,
     project_lead: "user-1",
     estimate: null,
@@ -61,13 +56,13 @@ describe("ProjectService", () => {
     const mockProjectsList: Project[] = [mockProjectData];
     (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockProjectsList);
 
-    const result = await projectService.listProjects(mockWorkspaceSlug);
+    const result = await projectService.listProjects();
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/{workspace_slug}/projects",
+      "/workspaces/test-workspace/projects",
       { method: "GET" },
-      { workspace_slug: mockWorkspaceSlug },
+      {},
     );
     expect(result).toEqual(mockProjectsList);
   });
@@ -75,16 +70,13 @@ describe("ProjectService", () => {
   it("getProject should call planeClient.request with correct parameters", async () => {
     (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockProjectData);
 
-    const result = await projectService.getProject(mockWorkspaceSlug, mockProjectId);
+    const result = await projectService.getProject(mockProjectId);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/{workspace_slug}/projects/{project_id}",
+      "/workspaces/test-workspace/projects/{project_id}",
       { method: "GET" },
-      {
-        workspace_slug: mockWorkspaceSlug,
-        project_id: mockProjectId,
-      },
+      { project_id: mockProjectId },
     );
     expect(result).toEqual(mockProjectData);
   });
@@ -98,16 +90,16 @@ describe("ProjectService", () => {
     const mockCreatedProject = { ...mockProjectData, ...payload, id: "new-proj-123" };
     (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedProject);
 
-    const result = await projectService.createProject(mockWorkspaceSlug, payload);
+    const result = await projectService.createProject(payload);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/{workspace_slug}/projects",
+      "/workspaces/test-workspace/projects",
       {
         method: "POST",
         body: JSON.stringify(payload),
       },
-      { workspace_slug: mockWorkspaceSlug },
+      {},
     );
     expect(result).toEqual(mockCreatedProject);
   });
@@ -117,19 +109,16 @@ describe("ProjectService", () => {
     const mockUpdatedProject = { ...mockProjectData, ...payload };
     (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockUpdatedProject);
 
-    const result = await projectService.updateProject(mockWorkspaceSlug, mockProjectId, payload);
+    const result = await projectService.updateProject(mockProjectId, payload);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/{workspace_slug}/projects/{project_id}",
+      "/workspaces/test-workspace/projects/{project_id}",
       {
         method: "PATCH",
         body: JSON.stringify(payload),
       },
-      {
-        workspace_slug: mockWorkspaceSlug,
-        project_id: mockProjectId,
-      },
+      { project_id: mockProjectId },
     );
     expect(result).toEqual(mockUpdatedProject);
   });
@@ -138,16 +127,13 @@ describe("ProjectService", () => {
     // Mock resolves to void/undefined for DELETE success
     (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
 
-    await projectService.deleteProject(mockWorkspaceSlug, mockProjectId);
+    await projectService.deleteProject(mockProjectId);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/{workspace_slug}/projects/{project_id}",
+      "/workspaces/test-workspace/projects/{project_id}",
       { method: "DELETE" },
-      {
-        workspace_slug: mockWorkspaceSlug,
-        project_id: mockProjectId,
-      },
+      { project_id: mockProjectId },
     );
   });
 });

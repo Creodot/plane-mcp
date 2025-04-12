@@ -1,8 +1,7 @@
+import { Priority } from "@/types/issue.types";
 import { z } from "zod";
-import { Priority } from "../types/issue.types.js";
 
 export const IssueIdentifierSchema = z.object({
-  workspace_slug: z.string().describe("The slug of the workspace containing the project."),
   project_id: z.string().describe("The ID of the project containing the issue."),
   issue_id: z.string().describe("The ID of the issue."),
 });
@@ -30,7 +29,6 @@ export const CreatePlaneIssuePayloadSchema = z.object({
 });
 
 export const CreateIssueToolSchema = z.object({
-  workspace_slug: z.string().describe("The slug of the workspace containing the project."),
   project_id: z.string().describe("The ID of the project where the issue will be created."),
   payload: CreatePlaneIssuePayloadSchema.describe("The data for the new issue."),
 });

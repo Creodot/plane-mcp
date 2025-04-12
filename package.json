@@ -2,12 +2,12 @@
   "name": "plane-mcp",
   "version": "0.2.0",
   "description": "MCP Server for interacting with the Plane.so API",
-  "main": "dist/mcp-server.js",
+  "main": "dist/src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch --env-file=.env dist/mcp-server.js",
-    "build": "tsc",
-    "start": "node --env-file=.env dist/mcp-server.js",
+    "dev": "node --watch --env-file=.env dist/src/index.js",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node --env-file=.env dist/src/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check ./src ./tests",
@@ -15,7 +15,12 @@
     "format:check": "biome format ./src ./tests",
     "prepare": "husky"
   },
-  "keywords": ["mcp", "model-context-protocol", "plane.so", "api"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "plane.so",
+    "api"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -27,6 +32,7 @@
     "@types/node": "^20.12.12",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",
+    "tsc-alias": "^1.8.15",
     "typescript": "^5.4.5",
     "vitest": "^3.1.1"
   },
@@ -34,6 +40,9 @@
     "node": ">=20"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": ["npm run format", "npm run lint"]
+    "**/*.{ts,tsx}": [
+      "npm run format",
+      "npm run lint"
+    ]
   }
 }

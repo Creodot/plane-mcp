@@ -1,5 +1,5 @@
+import { API_KEY, BASE_URL } from "@/configs/env";
 import { McpError } from "@modelcontextprotocol/sdk/types.js";
-import { API_KEY, BASE_URL } from "./index.js";
 
 /**
  * A simple client to interact with the Plane.so API.
@@ -10,7 +10,7 @@ export class PlaneClient {
   private apiKey: string | undefined;
 
   constructor() {
-    this.baseUrl = BASE_URL || "https://app.plane.so/api/v1";
+    this.baseUrl = BASE_URL;
     this.apiKey = API_KEY;
 
     if (!this.apiKey) {

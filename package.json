@@ -1,6 +1,6 @@
 {
   "name": "plane-mcp-server",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "MCP Server for interacting with the Plane.so API",
   "main": "dist/src/index.js",
   "type": "module",
@@ -10,7 +10,13 @@
     "build": "npm run clean && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && cp package.json dist/",
     "start": "node dist/src/index.js",
     "test": "vitest run",
+    "test:unit": "vitest run tests/issue-service.test.ts tests/project-service.test.ts",
     "test:watch": "vitest",
+    "test:integration": "vitest run tests/integration/**/*.ts",
+    "check:endpoints": "ts-node -r tsconfig-paths/register tests/check-endpoints.ts",
+    "test:local": "dotenv -e .env.test -- npm run test:integration",
+    "check:local": "dotenv -e .env.test -- npm run check:endpoints",
+    "test:debug": "dotenv -e .env.test -- vitest --inspect-brk",
     "lint": "biome check ./src ./tests",
     "format": "biome format --write ./src ./tests",
     "format:check": "biome format ./src ./tests",
@@ -27,8 +33,11 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^20.12.12",
+    "dotenv-cli": "^7.4.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tsc-alias": "^1.8.15",
     "typescript": "^5.4.5",
     "vitest": "^3.1.1"

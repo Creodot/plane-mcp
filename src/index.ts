@@ -1,5 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import packageJson from "../package.json" assert { type: "json" };
+import packageJson from "../package.json" with { type: "json" };
 import { registerAllTools } from "./register-tools.js";
 
 export const BASE_URL = process.env.PLANE_API_BASE_URL;

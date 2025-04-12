@@ -34,11 +34,6 @@
     "node": ">=20"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
-      "npm run format && npm run lint",
-      "npm run test",
-      "biome check --apply --no-errors-on-unmatched",
-      "git add"
-    ]
+    "**/*.{ts,tsx}": ["npm run format", "npm run lint"]
   }
 }

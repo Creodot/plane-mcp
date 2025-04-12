@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { issueService } from "../src/services/issue-service.js";
-import { planeClient } from "../src/services/plane-client.js";
-import type {
-  CreatePlaneIssuePayload,
-  PlaneIssue,
-  UpdatePlaneIssuePayload,
-} from "../src/types/plane-types.js";
+import { planeClient } from "../src/plane-client.js";
+import { issueService } from "../src/services/issue.service.js";
+import {
+  type CreateIssuePayload,
+  type Issue,
+  Priority,
+  type UpdateIssuePayload,
+} from "../src/types/issue.types.js";
 
 // Mock the planeClient
-vi.mock("../src/services/plane-client.js", () => ({
+vi.mock("../src/plane-client.ts", () => ({
   planeClient: {
     request: vi.fn(),
   },
@@ -25,12 +26,12 @@ describe("IssueService", () => {
   });
 
   it("getIssue should call planeClient.request with correct parameters", async () => {
-    const mockIssue: PlaneIssue = {
+    const mockIssue: Issue = {
       id: mockIssueId,
       name: "Test Issue",
       description: "Desc",
       description_html: "<p>Desc</p>",
-      priority: "medium",
+      priority: Priority.medium,
       state: "state-1",
       state_detail: null,
       project: mockProjectId,
@@ -45,15 +46,9 @@ describe("IssueService", () => {
       label_details: [],
       parent: null,
     };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockIssue,
-    );
+    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockIssue);
 
-    const result = await issueService.getIssue(
-      mockWorkspaceSlug,
-      mockProjectId,
-      mockIssueId,
-    );
+    const result = await issueService.getIssue(mockWorkspaceSlug, mockProjectId, mockIssueId);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
@@ -69,11 +64,11 @@ describe("IssueService", () => {
   });
 
   it("createIssue should call planeClient.request with correct parameters", async () => {
-    const payload: CreatePlaneIssuePayload = {
+    const payload: CreateIssuePayload = {
       name: "New Issue",
       project: mockProjectId,
     };
-    const mockCreatedIssue: PlaneIssue = {
+    const mockCreatedIssue: Issue = {
       id: "new-issue-789",
       name: "New Issue",
       description: null,
@@ -93,15 +88,9 @@ describe("IssueService", () => {
       label_details: [],
       parent: null,
     };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockCreatedIssue,
-    );
+    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedIssue);
 
-    const result = await issueService.createIssue(
-      mockWorkspaceSlug,
-      mockProjectId,
-      payload,
-    );
+    const result = await issueService.createIssue(mockWorkspaceSlug, mockProjectId, payload);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
@@ -116,14 +105,14 @@ describe("IssueService", () => {
   });
 
   it("createIssue should add project ID to payload if missing", async () => {
-    const payload: Omit<CreatePlaneIssuePayload, "project"> = {
+    const payload: Omit<CreateIssuePayload, "project"> = {
       name: "New Issue No Project",
     }; // Project missing
-    const expectedPayloadWithProject: CreatePlaneIssuePayload = {
+    const expectedPayloadWithProject: CreateIssuePayload = {
       ...payload,
       project: mockProjectId,
     };
-    const mockCreatedIssue: PlaneIssue = {
+    const mockCreatedIssue: Issue = {
       id: "new-issue-789",
       name: "New Issue No Project",
       description: null,
@@ -143,15 +132,9 @@ describe("IssueService", () => {
       label_details: [],
       parent: null,
     };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockCreatedIssue,
-    );
+    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedIssue);
 
-    await issueService.createIssue(
-      mockWorkspaceSlug,
-      mockProjectId,
-      payload as CreatePlaneIssuePayload,
-    );
+    await issueService.createIssue(mockWorkspaceSlug, mockProjectId, payload as CreateIssuePayload);
 
     expect(planeClient.request).toHaveBeenCalledTimes(1);
     expect(planeClient.request).toHaveBeenCalledWith(
@@ -165,13 +148,13 @@ describe("IssueService", () => {
   });
 
   it("updateIssue should call planeClient.request with correct parameters", async () => {
-    const payload: UpdatePlaneIssuePayload = { name: "Updated Issue Name" };
-    const mockUpdatedIssue: PlaneIssue = {
+    const payload: UpdateIssuePayload = { name: "Updated Issue Name" };
+    const mockUpdatedIssue: Issue = {
       id: mockIssueId,
       name: "Updated Issue Name",
       description: "Desc",
       description_html: "<p>Desc</p>",
-      priority: "medium",
+      priority: Priority.medium,
       state: "state-1",
       state_detail: null,
       project: mockProjectId,
@@ -186,9 +169,7 @@ describe("IssueService", () => {
       label_details: [],
       parent: null,
     };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockUpdatedIssue,
-    );
+    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockUpdatedIssue);
 
     const result = await issueService.updateIssue(
       mockWorkspaceSlug,

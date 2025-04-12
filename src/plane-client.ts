@@ -1,8 +1,5 @@
 import { McpError } from "@modelcontextprotocol/sdk/types.js";
-
-const BASE_URL =
-  process.env.PLANE_API_BASE_URL || "https://app.plane.so/api/v1";
-const API_KEY = process.env.PLANE_API_KEY;
+import { API_KEY, BASE_URL } from "./index.js";
 
 /**
  * A simple client to interact with the Plane.so API.
@@ -13,15 +10,11 @@ export class PlaneClient {
   private apiKey: string | undefined;
 
   constructor() {
-    this.baseUrl = BASE_URL;
+    this.baseUrl = BASE_URL || "https://app.plane.so/api/v1";
     this.apiKey = API_KEY;
 
     if (!this.apiKey) {
-      console.warn(
-        "WARN: PLANE_API_KEY environment variable is not set. Plane.so API calls will likely fail.",
-      );
-      // Consider throwing an error here if the API key is strictly required for all operations
-      // throw new Error("PLANE_API_KEY environment variable is not set.");
+      throw new Error("PLANE_API_KEY environment variable is not set.");
     }
   }
 
@@ -41,7 +34,6 @@ export class PlaneClient {
   ): Promise<T> {
     let url = `${this.baseUrl}${endpoint}`;
 
-    // Replace path parameters
     for (const [key, value] of Object.entries(params)) {
       url = url.replace(`{${key}}`, encodeURIComponent(value));
     }
@@ -78,20 +70,16 @@ export class PlaneClient {
         );
       }
 
-      // Handle cases with no content (e.g., 204 No Content)
       if (response.status === 204) {
-        return {} as T; // Return an empty object or handle as appropriate
+        return {} as T;
       }
 
       return (await response.json()) as T;
     } catch (error) {
       if (error instanceof McpError) {
-        throw error; // Re-throw known MCP errors
+        throw error;
       }
-      console.error(
-        "Network or unexpected error during Plane API request:",
-        error,
-      );
+      console.error("Network or unexpected error during Plane API request:", error);
       throw new McpError(
         500,
         `Failed to make request to Plane API: ${error instanceof Error ? error.message : String(error)}`,
@@ -100,5 +88,4 @@ export class PlaneClient {
   }
 }
 
-// Export a singleton instance
 export const planeClient = new PlaneClient();

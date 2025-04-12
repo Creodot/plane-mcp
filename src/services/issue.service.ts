@@ -1,12 +1,7 @@
-import type {
-  CreatePlaneIssuePayload,
-  PlaneIssue,
-  UpdatePlaneIssuePayload,
-} from "../types/plane-types.js";
-import { planeClient } from "./plane-client.js";
+import { planeClient } from "../plane-client.js";
+import type { CreateIssuePayload, Issue, UpdateIssuePayload } from "../types/issue.types.js";
 
-const BASE_ISSUE_PATH =
-  "/workspaces/{workspace_slug}/projects/{project_id}/issues";
+const BASE_ISSUE_PATH = "/workspaces/{workspace_slug}/projects/{project_id}/issues";
 
 /**
  * Service class for interacting with Plane.so Issue endpoints.
@@ -20,13 +15,9 @@ export class IssueService {
    * @param issueId - The ID of the issue to retrieve.
    * @returns The PlaneIssue object.
    */
-  async getIssue(
-    workspaceSlug: string,
-    projectId: string,
-    issueId: string,
-  ): Promise<PlaneIssue> {
+  async getIssue(workspaceSlug: string, projectId: string, issueId: string): Promise<Issue> {
     const endpoint = `${BASE_ISSUE_PATH}/{issue_id}`;
-    return planeClient.request<PlaneIssue>(
+    return planeClient.request<Issue>(
       endpoint,
       { method: "GET" },
       {
@@ -48,13 +39,13 @@ export class IssueService {
   async createIssue(
     workspaceSlug: string,
     projectId: string,
-    payload: CreatePlaneIssuePayload,
-  ): Promise<PlaneIssue> {
+    payload: CreateIssuePayload,
+  ): Promise<Issue> {
     // Ensure project ID is in the payload as it seems required by Plane API for creation
     if (!payload.project) {
       payload.project = projectId;
     }
-    return planeClient.request<PlaneIssue>(
+    return planeClient.request<Issue>(
       BASE_ISSUE_PATH,
       {
         method: "POST",
@@ -77,23 +68,15 @@ export class IssueService {
     workspaceSlug: string,
     projectId: string,
     issueId: string,
-    payload: UpdatePlaneIssuePayload,
-  ): Promise<PlaneIssue> {
+    payload: UpdateIssuePayload,
+  ): Promise<Issue> {
     const endpoint = `${BASE_ISSUE_PATH}/{issue_id}`;
-    return planeClient.request<PlaneIssue>(
+    return planeClient.request<Issue>(
       endpoint,
-      {
-        method: "PATCH", // Or PUT depending on the API design
-        body: JSON.stringify(payload),
-      },
-      {
-        workspace_slug: workspaceSlug,
-        project_id: projectId,
-        issue_id: issueId,
-      },
+      { method: "PATCH", body: JSON.stringify(payload) },
+      { workspace_slug: workspaceSlug, project_id: projectId, issue_id: issueId },
     );
   }
 }
 
-// Export a singleton instance
 export const issueService = new IssueService();

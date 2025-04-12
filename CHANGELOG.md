@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] - 2025-04-12
+
+### Refacto
+Update project structure and dependencies for Plane MCP server. Bump version to 0.2.0, change main entry point to 'dist/src/index.js', and enhance build scripts with 'tsc-alias'. Introduce new environment configuration file for better management of API keys and workspace slugs. Refactor services and tools to utilize the new configuration, improving code clarity and maintainability. Update README for repository cloning instructions. Add new dependencies and update existing ones in package.json and package-lock.json.
+
 ## [0.2.0] - 2025-04-12
 
 ### Added

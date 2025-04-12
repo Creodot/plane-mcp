@@ -1,8 +1,13 @@
-import { WORKSPACE_SLUG } from "@/configs/env";
-import { planeClient } from "@/plane-client";
-import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types";
-
-const BASE_PROJECT_PATH = `/workspaces/${WORKSPACE_SLUG}/projects`;
+import { WORKSPACE_SLUG } from "@/configs/env.js";
+import { planeClient } from "@/plane-client.js";
+import { CreateProjectSchema, UpdateProjectSchema } from "@/schemas/project.schema.js";
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateWithSchema,
+} from "@/schemas/tools.schema.js";
+import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types.js";
+import type { ToolResponse } from "@/types/tools.types.js";
 
 /**
  * Service class for interacting with Plane.so Project endpoints.
@@ -13,19 +18,34 @@ export class ProjectService {
    *
    * @returns An array of Project objects.
    */
-  async listProjects(): Promise<Project[]> {
-    return planeClient.request<Project[]>(BASE_PROJECT_PATH, { method: "GET" }, {});
+  async listProjects(): Promise<ToolResponse> {
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects`;
+
+    try {
+      const projects = await planeClient<Project[]>(endpoint, "GET");
+
+      return createSuccessResponse(projects);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
   }
 
   /**
    * Retrieves a specific project.
    *
-   * @param projectId - The ID of the project to retrieve.
+   * @param params - Object containing the project_id.
    * @returns The Project object.
    */
-  async getProject(projectId: string): Promise<Project> {
-    const endpoint = `${BASE_PROJECT_PATH}/{project_id}`;
-    return planeClient.request<Project>(endpoint, { method: "GET" }, { project_id: projectId });
+  async getProject(params: { project_id: string }): Promise<ToolResponse> {
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${params.project_id}`;
+
+    try {
+      const project = await planeClient<Project>(endpoint, "GET");
+
+      return createSuccessResponse(project);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
   }
 
   /**
@@ -34,47 +54,57 @@ export class ProjectService {
    * @param payload - The data for the new project.
    * @returns The newly created Project object.
    */
-  async createProject(payload: CreateProjectPayload): Promise<Project> {
-    return planeClient.request<Project>(
-      BASE_PROJECT_PATH,
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-      {},
-    );
+  async createProject(payload: CreateProjectPayload): Promise<ToolResponse> {
+    // Validate payload
+    const validPayload = validateWithSchema(CreateProjectSchema, payload);
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects`;
+
+    try {
+      const project = await planeClient<Project>(endpoint, "POST", validPayload);
+
+      return createSuccessResponse(project);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
   }
 
   /**
    * Updates an existing project.
    *
-   * @param projectId - The ID of the project to update.
-   * @param payload - The data to update the project with.
+   * @param payload - The data to update the project with, including project_id.
    * @returns The updated Project object.
    */
-  async updateProject(projectId: string, payload: UpdateProjectPayload): Promise<Project> {
-    const endpoint = `${BASE_PROJECT_PATH}/{project_id}`;
-    return planeClient.request<Project>(
-      endpoint,
-      {
-        method: "PATCH",
-        body: JSON.stringify(payload),
-      },
-      { project_id: projectId },
-    );
+  async updateProject(payload: UpdateProjectPayload): Promise<ToolResponse> {
+    // Validate payload
+    const validPayload = validateWithSchema(UpdateProjectSchema, payload);
+    const { project_id, ...updateData } = validPayload;
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${project_id}`;
+
+    try {
+      const project = await planeClient<Project>(endpoint, "PATCH", updateData);
+
+      return createSuccessResponse(project);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
   }
 
   /**
    * Deletes a project.
    *
-   * @param projectId - The ID of the project to delete.
-   * @returns An empty promise (or potentially status info, depending on API response).
+   * @param params - Object containing the project_id.
+   * @returns A success response or error.
    */
-  async deleteProject(projectId: string): Promise<void> {
-    const endpoint = `${BASE_PROJECT_PATH}/{project_id}`;
-    // The request method likely returns void or a specific status object upon successful deletion.
-    // Adjust the return type if the API provides a specific response body on DELETE.
-    await planeClient.request<void>(endpoint, { method: "DELETE" }, { project_id: projectId });
+  async deleteProject(params: { project_id: string }): Promise<ToolResponse> {
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${params.project_id}`;
+
+    try {
+      await planeClient(endpoint, "DELETE");
+
+      return createSuccessResponse({ message: "Project successfully deleted" });
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
   }
 }
 

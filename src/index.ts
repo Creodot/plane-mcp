@@ -1,11 +1,45 @@
-import { registerAllTools } from "@/register-tools";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import packageJson from "../package.json" with { type: "json" };
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { registerAllTools } from "@/tools/index.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import dotenv from "dotenv";
 
-const server = new McpServer({
-  name: "plane-mcp-server",
-  version: packageJson.version,
-  description: "Provides MCP tools to interact with the Plane.so API",
-});
+dotenv.config();
+
+// Get package.json data without experimental import
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf8"));
+
+const server = new Server(
+  {
+    name: "plane-mcp-server",
+    version: packageJson.version,
+    description: "Provides MCP tools to interact with the Plane.so API",
+  },
+  {
+    capabilities: {
+      tools: {},
+    },
+  },
+);
 
 registerAllTools(server);
+
+async function runServer() {
+  try {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.info("Plane MCP Server running on stdio");
+  } catch (error) {
+    console.error("Fatal error running server:", error);
+    process.exit(1);
+  }
+}
+
+runServer().catch((error) => {
+  console.error("Fatal error running server:", error);
+  process.exit(1);
+});

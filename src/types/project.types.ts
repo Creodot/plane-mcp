@@ -54,4 +54,6 @@ export type CreateProjectPayload = {
   default_state?: string | null;
 };
 
-export type UpdateProjectPayload = Partial<CreateProjectPayload>;
+export type UpdateProjectPayload = Partial<CreateProjectPayload> & {
+  project_id: string;
+};

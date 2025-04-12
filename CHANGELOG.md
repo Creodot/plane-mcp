@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0] - 2025-04-15
+
+### Added
+- Added comprehensive validation with Zod schemas for all API operations
+- Implemented domain-specific schema organization (issue vs project schemas)
+- Added `validateWithSchema` utility function for consistent validation handling
+- Added custom error handling with `ValidationError` class
+
+### Changed
+- Refactored tool handler implementation to reduce code repetition
+- Improved error handling with centralized try/catch pattern
+- Updated service methods to use the new schema validation
+- Standardized response formats with `createSuccessResponse` and `createErrorResponse`
+- Streamlined type conversions between tool arguments and API payloads
+- Updated unit tests to match new implementation
+
+### Removed
+- Removed redundant validation code in service methods
+
 ## [0.2.1] - 2025-04-12
 
 ### Refacto

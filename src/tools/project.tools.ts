@@ -1,101 +1,193 @@
-import {
-  CreateProjectToolSchema,
-  ProjectIdentifierSchema,
-  UpdateProjectToolSchema,
-} from "@/schemas/project.schemas";
-import { projectService } from "@/services/project.service";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { z } from "zod";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
-// Shared type for handler results
-type HandlerResult = {
-  content: { type: "text"; text: string }[];
-  isError?: boolean;
-  _meta?: Record<string, unknown>;
+const PROJECT_IDENTIFIER_TOOL = {
+  listProjects: "list-projects",
+  getProject: "get-project",
+  createProject: "create-project",
+  updateProject: "update-project",
+  deleteProject: "delete-project",
 };
 
-// Handler for listing projects
-const handleListProjects = async (): Promise<HandlerResult> => {
-  const projects = await projectService.listProjects();
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(projects, null, 2),
+const LIST_PROJECTS_TOOL: Tool = {
+  name: PROJECT_IDENTIFIER_TOOL.listProjects,
+  description: "List all projects in the workspace",
+  inputSchema: {
+    type: "object",
+    properties: {},
+    required: [],
+  },
+};
+
+const GET_PROJECT_TOOL: Tool = {
+  name: PROJECT_IDENTIFIER_TOOL.getProject,
+  description: "Get detailed information about a specific project",
+  inputSchema: {
+    type: "object",
+    properties: {
+      project_id: {
+        type: "string",
+        description: "ID of the project to retrieve",
       },
-    ],
-  };
+    },
+    required: ["project_id"],
+  },
 };
 
-// Handler for getting a specific project
-const handleGetProject = async (
-  args: z.infer<typeof ProjectIdentifierSchema>,
-): Promise<HandlerResult> => {
-  const { project_id } = args;
-  const project = await projectService.getProject(project_id);
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(project, null, 2),
+const CREATE_PROJECT_TOOL: Tool = {
+  name: PROJECT_IDENTIFIER_TOOL.createProject,
+  description: "Create a new project",
+  inputSchema: {
+    type: "object",
+    properties: {
+      name: {
+        type: "string",
+        description: "Name of the project",
       },
-    ],
-  };
-};
-
-// Handler for creating a new project
-const handleCreateProject = async (
-  args: z.infer<typeof CreateProjectToolSchema>,
-): Promise<HandlerResult> => {
-  const { payload } = args;
-  const newProject = await projectService.createProject(payload);
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(newProject, null, 2),
+      identifier: {
+        type: "string",
+        description: "Unique identifier for the project (e.g., PROJ)",
       },
-    ],
-  };
-};
-
-// Handler for updating a project
-const handleUpdateProject = async (
-  args: z.infer<typeof UpdateProjectToolSchema>,
-): Promise<HandlerResult> => {
-  const { project_id, payload } = args;
-  const updatedProject = await projectService.updateProject(project_id, payload);
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(updatedProject, null, 2),
+      description: {
+        type: "string",
+        description: "Description of the project",
       },
-    ],
-  };
-};
-
-// Handler for deleting a project
-const handleDeleteProject = async (
-  args: z.infer<typeof ProjectIdentifierSchema>,
-): Promise<HandlerResult> => {
-  const { project_id } = args;
-  await projectService.deleteProject(project_id);
-  return {
-    content: [
-      {
-        type: "text",
-        text: `Project with ID ${project_id} has been deleted.`,
+      network: {
+        type: "number",
+        enum: [0, 2],
+        description: "Project visibility (0 = Secret, 2 = Public)",
       },
-    ],
-  };
+      emoji: {
+        type: "string",
+        description: "HTML emoji DEX code without the '&#'",
+      },
+      module_view: {
+        type: "boolean",
+        description: "Enable/disable module view for the project",
+      },
+      cycle_view: {
+        type: "boolean",
+        description: "Enable/disable cycle view for the project",
+      },
+      issue_views_view: {
+        type: "boolean",
+        description: "Enable/disable issue views for the project",
+      },
+      page_view: {
+        type: "boolean",
+        description: "Enable/disable page view for the project",
+      },
+      inbox_view: {
+        type: "boolean",
+        description: "Enable/disable inbox view for the project",
+      },
+      archive_in: {
+        type: "number",
+        description: "Months in which to auto-archive issues (0-12)",
+      },
+      close_in: {
+        type: "number",
+        description: "Months in which to auto-close issues (0-12)",
+      },
+      default_assignee: {
+        type: "string",
+        description: "UUID of user to auto-assign issues to",
+      },
+      project_lead: {
+        type: "string",
+        description: "UUID of the project lead user",
+      },
+    },
+    required: ["name", "identifier"],
+  },
 };
 
-// Function to register all project tools with the MCP server
-export function registerProjectTools(server: McpServer) {
-  server.tool("plane_list_projects", ProjectIdentifierSchema.shape, handleListProjects);
-  server.tool("plane_get_project", ProjectIdentifierSchema.shape, handleGetProject);
-  server.tool("plane_create_project", CreateProjectToolSchema.shape, handleCreateProject);
-  server.tool("plane_update_project", UpdateProjectToolSchema.shape, handleUpdateProject);
-  server.tool("plane_delete_project", ProjectIdentifierSchema.shape, handleDeleteProject);
-}
+const UPDATE_PROJECT_TOOL: Tool = {
+  name: PROJECT_IDENTIFIER_TOOL.updateProject,
+  description: "Update a project",
+  inputSchema: {
+    type: "object",
+    properties: {
+      project_id: {
+        type: "string",
+        description: "ID of the project to update",
+      },
+      name: {
+        type: "string",
+        description: "Updated name of the project",
+      },
+      description: {
+        type: "string",
+        description: "Updated description of the project",
+      },
+      network: {
+        type: "number",
+        enum: [0, 2],
+        description: "Updated project visibility (0 = Secret, 2 = Public)",
+      },
+      emoji: {
+        type: "string",
+        description: "Updated HTML emoji DEX code without the '&#'",
+      },
+      module_view: {
+        type: "boolean",
+        description: "Updated module view setting",
+      },
+      cycle_view: {
+        type: "boolean",
+        description: "Updated cycle view setting",
+      },
+      issue_views_view: {
+        type: "boolean",
+        description: "Updated issue views setting",
+      },
+      page_view: {
+        type: "boolean",
+        description: "Updated page view setting",
+      },
+      inbox_view: {
+        type: "boolean",
+        description: "Updated inbox view setting",
+      },
+      archive_in: {
+        type: "number",
+        description: "Updated months for auto-archiving (0-12)",
+      },
+      close_in: {
+        type: "number",
+        description: "Updated months for auto-closing (0-12)",
+      },
+      default_assignee: {
+        type: "string",
+        description: "Updated UUID of default assignee",
+      },
+      project_lead: {
+        type: "string",
+        description: "Updated UUID of project lead",
+      },
+    },
+    required: ["project_id"],
+  },
+};
+
+const DELETE_PROJECT_TOOL: Tool = {
+  name: PROJECT_IDENTIFIER_TOOL.deleteProject,
+  description: "Delete a project",
+  inputSchema: {
+    type: "object",
+    properties: {
+      project_id: {
+        type: "string",
+        description: "ID of the project to delete",
+      },
+    },
+    required: ["project_id"],
+  },
+};
+
+export const PROJECT_TOOLS = {
+  CREATE_PROJECT_TOOL,
+  DELETE_PROJECT_TOOL,
+  GET_PROJECT_TOOL,
+  LIST_PROJECTS_TOOL,
+  UPDATE_PROJECT_TOOL,
+};

@@ -24,6 +24,9 @@ This server allows MCP clients (like AI assistants or other tools) to interact w
     *   [Security Considerations](#-security-considerations)
 *   [For Developers](#-for-developers)
     *   [Development](#development-%EF%B8%8F)
+    *   [Project Structure](#-project-structure)
+    *   [Validation and Error Handling](#-validation-and-error-handling)
+    *   [Adding New Tools](#-adding-new-tools)
     *   [Testing](#-testing)
     *   [Linting and Formatting](#-linting-and-formatting)
     *   [Contributing](#-contributing)
@@ -154,6 +157,53 @@ To run the server in development mode with automatic rebuilding and restarting o
 npm run dev
 ```
 
+### Project Structure 📂
+
+The project follows a domain-driven organization:
+
+```
+src/
+├── configs/         # Environment and configuration
+├── plane-client.js  # API client wrapper
+├── schemas/         # Zod validation schemas
+│   ├── tools.schema.ts    # Common tool schemas and utilities
+│   ├── project.schema.ts  # Project-specific schemas 
+│   └── issue.schema.ts    # Issue-specific schemas
+├── services/        # Service layer for API interactions
+│   ├── project.service.ts
+│   └── issue.service.ts
+├── tools/           # MCP tool definitions and handlers
+│   ├── index.ts           # Tool registration
+│   ├── project.tools.ts   # Project tool definitions
+│   └── issue.tools.ts     # Issue tool definitions
+└── types/           # TypeScript type definitions
+```
+
+### Validation and Error Handling ✅
+
+The project uses Zod for comprehensive validation:
+
+1. **Schema Definition**: Domain-specific schemas are defined in `src/schemas/`
+2. **Schema Validation**: The `validateWithSchema` utility ensures consistent validation
+3. **Error Handling**: Custom `ValidationError` class for structured error reporting
+
+Example of using validation:
+
+```typescript
+// In a service method
+const validData = validateWithSchema(MySchema, inputData);
+// validData is now correctly typed and validated
+```
+
+### Adding New Tools 🔧
+
+To add a new tool:
+
+1. Define the tool interface in the appropriate domain file (e.g., `src/tools/issue.tools.ts`)
+2. Add validation schemas in the domain schema file (e.g., `src/schemas/issue.schema.ts`)
+3. Implement the service method in the service file (e.g., `src/services/issue.service.ts`)
+4. Register the tool in `src/tools/index.ts`
+
 ### Testing 🧪
 
 Run the full test suite:
@@ -167,6 +217,8 @@ Run tests in watch mode during development:
 ```bash
 npm run test:watch
 ```
+
+Tests use Vitest and are located in the `tests/` directory, mirroring the structure of the `src/` directory.
 
 ### Linting and Formatting ✨
 

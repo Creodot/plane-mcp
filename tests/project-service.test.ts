@@ -1,4 +1,3 @@
-import { WORKSPACE_SLUG } from "@/configs/env.js";
 import { planeClient } from "@/plane-client.js";
 import { createSuccessResponse } from "@/schemas/tools.schema.js";
 import { projectService } from "@/services/project.service.js";
@@ -71,7 +70,7 @@ describe("ProjectService", () => {
     const result = await projectService.listProjects();
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(`/workspaces/${WORKSPACE_SLUG}/projects`, "GET");
+    expect(planeClient).toHaveBeenCalledWith("/projects", "GET");
     expect(result).toEqual(createSuccessResponse(mockProjectsList));
   });
 
@@ -82,10 +81,7 @@ describe("ProjectService", () => {
     const result = await projectService.getProject(params);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}`,
-      "GET",
-    );
+    expect(planeClient).toHaveBeenCalledWith(`/projects/${mockProjectId}`, "GET");
     expect(result).toEqual(createSuccessResponse(mockProjectData));
   });
 
@@ -101,11 +97,7 @@ describe("ProjectService", () => {
     const result = await projectService.createProject(payload);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/projects`,
-      "POST",
-      payload,
-    );
+    expect(planeClient).toHaveBeenCalledWith("/projects", "POST", payload);
     expect(result).toEqual(createSuccessResponse(mockCreatedProject));
   });
 
@@ -125,11 +117,10 @@ describe("ProjectService", () => {
     const result = await projectService.updateProject(payload);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}`,
-      "PATCH",
-      { name: payload.name, description: payload.description },
-    );
+    expect(planeClient).toHaveBeenCalledWith(`/projects/${mockProjectId}`, "PATCH", {
+      name: payload.name,
+      description: payload.description,
+    });
     expect(result).toEqual(createSuccessResponse(mockUpdatedProject));
   });
 
@@ -140,10 +131,7 @@ describe("ProjectService", () => {
     const result = await projectService.deleteProject(params);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}`,
-      "DELETE",
-    );
+    expect(planeClient).toHaveBeenCalledWith(`/projects/${mockProjectId}`, "DELETE");
     expect(result).toEqual(createSuccessResponse({ message: "Project successfully deleted" }));
   });
 

@@ -1,4 +1,3 @@
-import { WORKSPACE_SLUG } from "@/configs/env.js";
 import { planeClient } from "@/plane-client.js";
 import { createSuccessResponse } from "@/schemas/tools.schema.js";
 import { issueService } from "@/services/issue.service.js";
@@ -59,10 +58,7 @@ describe("IssueService", () => {
     const result = await issueService.getIssue(mockIssueId);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/issues/${mockIssueId}`,
-      "GET",
-    );
+    expect(planeClient).toHaveBeenCalledWith(`/issues/${mockIssueId}`, "GET");
     expect(result).toEqual(createSuccessResponse(mockIssue));
   });
 
@@ -81,11 +77,7 @@ describe("IssueService", () => {
     const result = await issueService.createIssue(payload);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/issues`,
-      "POST",
-      payload,
-    );
+    expect(planeClient).toHaveBeenCalledWith("/issues", "POST", payload);
     expect(result).toEqual(createSuccessResponse(mockCreatedIssue));
   });
 
@@ -103,11 +95,9 @@ describe("IssueService", () => {
     const result = await issueService.updateIssue(payload);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/issues/${mockIssueId}`,
-      "PATCH",
-      { name: payload.name },
-    );
+    expect(planeClient).toHaveBeenCalledWith(`/issues/${mockIssueId}`, "PATCH", {
+      name: payload.name,
+    });
     expect(result).toEqual(createSuccessResponse(mockUpdatedIssue));
   });
 
@@ -118,7 +108,7 @@ describe("IssueService", () => {
 
     expect(planeClient).toHaveBeenCalledTimes(1);
     expect(planeClient).toHaveBeenCalledWith(
-      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}/issues/${mockIssueId}`,
+      `/projects/${mockProjectId}/issues/${mockIssueId}`,
       "DELETE",
     );
     expect(result).toEqual(createSuccessResponse({ message: "Issue successfully deleted" }));

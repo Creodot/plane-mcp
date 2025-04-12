@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.3.0] - 2025-04-15
+## [0.3.1] - 2025-04-13
+
+### Changed
+- API Endpoint
+
+## [0.3.0] - 2025-04-12
 
 ### Added
 - Added comprehensive validation with Zod schemas for all API operations

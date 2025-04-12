@@ -1,4 +1,5 @@
-import { WORKSPACE_SLUG } from "@/configs/env.js";
+#!/usr/bin/env node
+
 import { planeClient } from "@/plane-client.js";
 import { CreateProjectSchema, UpdateProjectSchema } from "@/schemas/project.schema.js";
 import {
@@ -19,7 +20,7 @@ export class ProjectService {
    * @returns An array of Project objects.
    */
   async listProjects(): Promise<ToolResponse> {
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects`;
+    const endpoint = "/projects";
 
     try {
       const projects = await planeClient<Project[]>(endpoint, "GET");
@@ -37,7 +38,7 @@ export class ProjectService {
    * @returns The Project object.
    */
   async getProject(params: { project_id: string }): Promise<ToolResponse> {
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${params.project_id}`;
+    const endpoint = `/projects/${params.project_id}`;
 
     try {
       const project = await planeClient<Project>(endpoint, "GET");
@@ -57,7 +58,7 @@ export class ProjectService {
   async createProject(payload: CreateProjectPayload): Promise<ToolResponse> {
     // Validate payload
     const validPayload = validateWithSchema(CreateProjectSchema, payload);
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects`;
+    const endpoint = "/projects";
 
     try {
       const project = await planeClient<Project>(endpoint, "POST", validPayload);
@@ -78,7 +79,7 @@ export class ProjectService {
     // Validate payload
     const validPayload = validateWithSchema(UpdateProjectSchema, payload);
     const { project_id, ...updateData } = validPayload;
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${project_id}`;
+    const endpoint = `/projects/${project_id}`;
 
     try {
       const project = await planeClient<Project>(endpoint, "PATCH", updateData);
@@ -96,7 +97,7 @@ export class ProjectService {
    * @returns A success response or error.
    */
   async deleteProject(params: { project_id: string }): Promise<ToolResponse> {
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${params.project_id}`;
+    const endpoint = `/projects/${params.project_id}`;
 
     try {
       await planeClient(endpoint, "DELETE");

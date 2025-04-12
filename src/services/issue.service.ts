@@ -1,4 +1,5 @@
-import { WORKSPACE_SLUG } from "@/configs/env.js";
+#!/usr/bin/env node
+
 import { planeClient } from "@/plane-client.js";
 import { CreateIssueSchema, UpdateIssueSchema } from "@/schemas/issue.schema.js";
 import {
@@ -20,7 +21,7 @@ export class IssueService {
    * @returns The PlaneIssue object.
    */
   async getIssue(issueId: string): Promise<ToolResponse> {
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/issues/${issueId}`;
+    const endpoint = `/issues/${issueId}`;
 
     try {
       const issue = await planeClient<Issue>(endpoint, "GET");
@@ -39,7 +40,7 @@ export class IssueService {
   async createIssue(payload: CreateIssuePayload): Promise<ToolResponse> {
     // Validate payload
     const validPayload = validateWithSchema(CreateIssueSchema, payload);
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/issues`;
+    const endpoint = "/issues";
 
     try {
       const issue = await planeClient<Issue>(endpoint, "POST", validPayload);
@@ -60,7 +61,7 @@ export class IssueService {
     // Validate payload
     const validPayload = validateWithSchema(UpdateIssueSchema, payload);
     const { issue_id, ...updateData } = validPayload;
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/issues/${issue_id}`;
+    const endpoint = `/issues/${issue_id}`;
 
     try {
       const issue = await planeClient<Issue>(endpoint, "PATCH", updateData);
@@ -79,7 +80,7 @@ export class IssueService {
    * @returns A success response or error.
    */
   async deleteIssue(projectId: string, issueId: string): Promise<ToolResponse> {
-    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${projectId}/issues/${issueId}`;
+    const endpoint = `/projects/${projectId}/issues/${issueId}`;
 
     try {
       await planeClient(endpoint, "DELETE");

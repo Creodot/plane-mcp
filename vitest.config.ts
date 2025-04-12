@@ -1,18 +1,25 @@
-import { defineConfig } from 'vitest/config'
+import { resolve } from "node:path";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    globals: true, // Use global APIs like describe, it, expect
-    environment: 'node', // Specify Node.js environment
+    globals: true,
+    environment: "node",
     coverage: {
-      provider: 'v8', // Use v8 for coverage
-      reporter: ['text', 'json', 'html'], // Coverage reporters
-      include: ['src/**/*.ts'], // Files to include in coverage
-      exclude: [
-        'src/types/**/*.ts',
-        'src/**/*.test.ts',
-        'src/mcp-server.ts', // Exclude server entry point from unit test coverage
-      ],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      include: ["src/**/*.ts"],
+      exclude: ["src/types/**/*.ts", "src/**/*.test.ts", "src/mcp-server.ts"],
+    },
+    env: {
+      PLANE_API_BASE_URL: "https://app.plane.so/api/v1",
+      PLANE_API_KEY: "test-api-key",
+      PLANE_WORKSPACE_SLUG: "test-workspace",
     },
   },
-}) 
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+    },
+  },
+});

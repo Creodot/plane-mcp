@@ -1,8 +1,13 @@
 import { WORKSPACE_SLUG } from "@/configs/env.js";
 import { planeClient } from "@/plane-client.js";
+import { CreateIssueSchema, UpdateIssueSchema } from "@/schemas/issue.schema.js";
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  validateWithSchema,
+} from "@/schemas/tools.schema.js";
 import type { CreateIssuePayload, Issue, UpdateIssuePayload } from "@/types/issue.types.js";
-
-const BASE_ISSUE_PATH = `/workspaces/${WORKSPACE_SLUG}/projects/{project_id}/issues`;
+import type { ToolResponse } from "@/types/tools.types.js";
 
 /**
  * Service class for interacting with Plane.so Issue endpoints.
@@ -11,63 +16,78 @@ export class IssueService {
   /**
    * Retrieves a specific issue.
    *
-   * @param projectId - The ID of the project.
    * @param issueId - The ID of the issue to retrieve.
    * @returns The PlaneIssue object.
    */
-  async getIssue(projectId: string, issueId: string): Promise<Issue> {
-    const endpoint = `${BASE_ISSUE_PATH}/{issue_id}`;
-    return planeClient.request<Issue>(
-      endpoint,
-      { method: "GET" },
-      {
-        project_id: projectId,
-        issue_id: issueId,
-      },
-    );
-  }
+  async getIssue(issueId: string): Promise<ToolResponse> {
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/issues/${issueId}`;
 
+    try {
+      const issue = await planeClient<Issue>(endpoint, "GET");
+
+      return createSuccessResponse(issue);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
+  }
   /**
    * Creates a new issue.
    *
-   * @param projectId - The ID of the project where the issue will be created.
    * @param payload - The data for the new issue.
    * @returns The newly created PlaneIssue object.
    */
-  async createIssue(projectId: string, payload: CreateIssuePayload): Promise<Issue> {
-    // Ensure project ID is in the payload as it seems required by Plane API for creation
-    if (!payload.project) {
-      payload.project = projectId;
+  async createIssue(payload: CreateIssuePayload): Promise<ToolResponse> {
+    // Validate payload
+    const validPayload = validateWithSchema(CreateIssueSchema, payload);
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/issues`;
+
+    try {
+      const issue = await planeClient<Issue>(endpoint, "POST", validPayload);
+
+      return createSuccessResponse(issue);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
     }
-    return planeClient.request<Issue>(
-      BASE_ISSUE_PATH,
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-      { project_id: projectId },
-    );
   }
 
   /**
    * Updates an existing issue.
    *
-   * @param projectId - The ID of the project containing the issue.
-   * @param issueId - The ID of the issue to update.
    * @param payload - The data to update the issue with.
    * @returns The updated PlaneIssue object.
    */
-  async updateIssue(
-    projectId: string,
-    issueId: string,
-    payload: UpdateIssuePayload,
-  ): Promise<Issue> {
-    const endpoint = `${BASE_ISSUE_PATH}/{issue_id}`;
-    return planeClient.request<Issue>(
-      endpoint,
-      { method: "PATCH", body: JSON.stringify(payload) },
-      { project_id: projectId, issue_id: issueId },
-    );
+  async updateIssue(payload: UpdateIssuePayload): Promise<ToolResponse> {
+    // Validate payload
+    const validPayload = validateWithSchema(UpdateIssueSchema, payload);
+    const { issue_id, ...updateData } = validPayload;
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/issues/${issue_id}`;
+
+    try {
+      const issue = await planeClient<Issue>(endpoint, "PATCH", updateData);
+
+      return createSuccessResponse(issue);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
+   * Deletes an issue.
+   *
+   * @param projectId - The ID of the project containing the issue.
+   * @param issueId - The ID of the issue to delete.
+   * @returns A success response or error.
+   */
+  async deleteIssue(projectId: string, issueId: string): Promise<ToolResponse> {
+    const endpoint = `/workspaces/${WORKSPACE_SLUG}/projects/${projectId}/issues/${issueId}`;
+
+    try {
+      await planeClient(endpoint, "DELETE");
+
+      return createSuccessResponse({ message: "Issue successfully deleted" });
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
   }
 }
 

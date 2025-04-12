@@ -1,6 +1,6 @@
 {
   "name": "plane-mcp-server",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "MCP Server for interacting with the Plane.so API",
   "main": "dist/src/index.js",
   "type": "module",
@@ -16,12 +16,7 @@
     "format:check": "biome format ./src ./tests",
     "prepare": "husky"
   },
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "plane.so",
-    "api"
-  ],
+  "keywords": ["mcp", "model-context-protocol", "plane.so", "api"],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -42,9 +37,6 @@
     "node": ">=20"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
-      "npm run format",
-      "npm run lint"
-    ]
+    "**/*.{ts,tsx}": ["npm run format", "npm run lint"]
   }
 }

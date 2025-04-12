@@ -1,17 +1,29 @@
+import { WORKSPACE_SLUG } from "@/configs/env.js";
 import { planeClient } from "@/plane-client.js";
+import { createSuccessResponse } from "@/schemas/tools.schema.js";
 import { projectService } from "@/services/project.service.js";
 import type { CreateProjectPayload, Project, UpdateProjectPayload } from "@/types/project.types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock the planeClient
+// Mock the planeClient and validateWithSchema
 vi.mock("@/plane-client.js", () => ({
-  planeClient: {
-    request: vi.fn(),
-  },
+  planeClient: vi.fn(),
+}));
+
+vi.mock("@/schemas/tools.schema.js", () => ({
+  validateWithSchema: vi.fn((_, data) => data),
+  createSuccessResponse: vi.fn((data) => ({
+    content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+    isError: false,
+  })),
+  createErrorResponse: vi.fn((message) => ({
+    content: [{ type: "text", text: message }],
+    isError: true,
+  })),
 }));
 
 describe("ProjectService", () => {
-  const mockProjectId = "proj-789";
+  const mockProjectId = "00918ea1-52f7-48bd-abe3-d3efe76ff7dd";
   const mockProjectData: Project = {
     id: mockProjectId,
     total_members: 5,
@@ -38,11 +50,11 @@ describe("ProjectService", () => {
     cover_image: null,
     archive_in: 0,
     close_in: 0,
-    created_by: "user-1",
-    updated_by: "user-1",
-    workspace: "test-workspace",
+    created_by: "16c61a3a-512a-48ac-b0be-b6b46fe6f430",
+    updated_by: "16c61a3a-512a-48ac-b0be-b6b46fe6f430",
+    workspace: "cd4ab5a2-1a5f-4516-a6c6-8da1a9fa5be4",
     default_assignee: null,
-    project_lead: "user-1",
+    project_lead: "16c61a3a-512a-48ac-b0be-b6b46fe6f430",
     estimate: null,
     default_state: null,
   };
@@ -52,88 +64,98 @@ describe("ProjectService", () => {
     vi.clearAllMocks();
   });
 
-  it("listProjects should call planeClient.request with correct parameters", async () => {
+  it("listProjects should call planeClient with correct parameters", async () => {
     const mockProjectsList: Project[] = [mockProjectData];
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockProjectsList);
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockProjectsList);
 
     const result = await projectService.listProjects();
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects",
-      { method: "GET" },
-      {},
-    );
-    expect(result).toEqual(mockProjectsList);
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(`/workspaces/${WORKSPACE_SLUG}/projects`, "GET");
+    expect(result).toEqual(createSuccessResponse(mockProjectsList));
   });
 
-  it("getProject should call planeClient.request with correct parameters", async () => {
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockProjectData);
+  it("getProject should call planeClient with correct parameters", async () => {
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockProjectData);
 
-    const result = await projectService.getProject(mockProjectId);
+    const params = { project_id: mockProjectId };
+    const result = await projectService.getProject(params);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}",
-      { method: "GET" },
-      { project_id: mockProjectId },
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}`,
+      "GET",
     );
-    expect(result).toEqual(mockProjectData);
+    expect(result).toEqual(createSuccessResponse(mockProjectData));
   });
 
-  it("createProject should call planeClient.request with correct parameters", async () => {
+  it("createProject should call planeClient with correct parameters", async () => {
     const payload: CreateProjectPayload = {
       name: "New Test Project",
       identifier: "NEWPROJ",
       network: 0,
     };
     const mockCreatedProject = { ...mockProjectData, ...payload, id: "new-proj-123" };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedProject);
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedProject);
 
     const result = await projectService.createProject(payload);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-      {},
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/projects`,
+      "POST",
+      payload,
     );
-    expect(result).toEqual(mockCreatedProject);
+    expect(result).toEqual(createSuccessResponse(mockCreatedProject));
   });
 
-  it("updateProject should call planeClient.request with correct parameters", async () => {
-    const payload: UpdateProjectPayload = { name: "Updated Project Name", description: "New Desc" };
-    const mockUpdatedProject = { ...mockProjectData, ...payload };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockUpdatedProject);
+  it("updateProject should call planeClient with correct parameters", async () => {
+    const payload: UpdateProjectPayload = {
+      project_id: mockProjectId,
+      name: "Updated Project Name",
+      description: "New Desc",
+    };
+    const mockUpdatedProject = {
+      ...mockProjectData,
+      name: payload.name,
+      description: payload.description,
+    };
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockUpdatedProject);
 
-    const result = await projectService.updateProject(mockProjectId, payload);
+    const result = await projectService.updateProject(payload);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}",
-      {
-        method: "PATCH",
-        body: JSON.stringify(payload),
-      },
-      { project_id: mockProjectId },
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}`,
+      "PATCH",
+      { name: payload.name, description: payload.description },
     );
-    expect(result).toEqual(mockUpdatedProject);
+    expect(result).toEqual(createSuccessResponse(mockUpdatedProject));
   });
 
-  it("deleteProject should call planeClient.request with correct parameters", async () => {
-    // Mock resolves to void/undefined for DELETE success
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+  it("deleteProject should call planeClient with correct parameters", async () => {
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
 
-    await projectService.deleteProject(mockProjectId);
+    const params = { project_id: mockProjectId };
+    const result = await projectService.deleteProject(params);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}",
-      { method: "DELETE" },
-      { project_id: mockProjectId },
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}`,
+      "DELETE",
     );
+    expect(result).toEqual(createSuccessResponse({ message: "Project successfully deleted" }));
+  });
+
+  it("should handle errors properly", async () => {
+    const errorMessage = "API Error";
+    (planeClient as ReturnType<typeof vi.fn>).mockRejectedValue(new Error(errorMessage));
+
+    const result = await projectService.listProjects();
+
+    expect(result).toEqual({
+      content: [{ type: "text", text: errorMessage }],
+      isError: true,
+    });
   });
 });

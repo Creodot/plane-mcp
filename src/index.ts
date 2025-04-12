@@ -1,10 +1,17 @@
-import { registerAllTools } from "@/register-tools.js";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { registerAllTools } from "@/tools/index.js";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import dotenv from "dotenv";
-import packageJson from "../package.json" with { type: "json" };
 
 dotenv.config();
+
+// Get package.json data without experimental import
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf8"));
 
 const server = new Server(
   {
@@ -32,7 +39,6 @@ async function runServer() {
   }
 }
 
-// Start the server
 runServer().catch((error) => {
   console.error("Fatal error running server:", error);
   process.exit(1);

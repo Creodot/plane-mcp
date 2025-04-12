@@ -63,4 +63,5 @@ export type CreateIssuePayload = {
 
 export type UpdateIssuePayload = Partial<Omit<IssueBase, "state">> & {
   state?: string | null;
+  issue_id: string;
 };

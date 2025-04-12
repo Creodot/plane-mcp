@@ -1,181 +1,138 @@
+import { WORKSPACE_SLUG } from "@/configs/env.js";
 import { planeClient } from "@/plane-client.js";
+import { createSuccessResponse } from "@/schemas/tools.schema.js";
 import { issueService } from "@/services/issue.service.js";
 import type { CreateIssuePayload, Issue, UpdateIssuePayload } from "@/types/issue.types.js";
 import { Priority } from "@/types/issue.types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock the planeClient
+// Mock the planeClient and validateWithSchema
 vi.mock("@/plane-client.js", () => ({
-  planeClient: {
-    request: vi.fn(),
-  },
+  planeClient: vi.fn(),
+}));
+
+vi.mock("@/schemas/tools.schema.js", () => ({
+  validateWithSchema: vi.fn((_, data) => data),
+  createSuccessResponse: vi.fn((data) => ({
+    content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+    isError: false,
+  })),
+  createErrorResponse: vi.fn((message) => ({
+    content: [{ type: "text", text: message }],
+    isError: true,
+  })),
 }));
 
 describe("IssueService", () => {
-  const mockProjectId = "proj-123";
-  const mockIssueId = "issue-456";
+  const mockProjectId = "4af68566-94a4-4eb3-94aa-50dc9427067b";
+  const mockIssueId = "e1c25c66-5bb8-465e-a818-92a483423443";
+
+  const mockIssue: Issue = {
+    id: mockIssueId,
+    name: "First Issue",
+    description: "Issue description",
+    description_html: "<p>Issue description</p>",
+    priority: Priority.medium,
+    state: "f3f045db-7e74-49f2-b3b2-0b7dee4635ae",
+    state_detail: null,
+    project: mockProjectId,
+    workspace: "cd4ab5a2-1a5f-4516-a6c6-8da1a9fa5be4",
+    created_at: "2023-11-19T11:56:55.176802Z",
+    updated_at: "2023-11-19T11:56:55.176809Z",
+    created_by: "16c61a3a-512a-48ac-b0be-b6b46fe6f430",
+    updated_by: "16c61a3a-512a-48ac-b0be-b6b46fe6f430",
+    assignees: ["797b5aea-3f40-4199-be84-5f94e0d04501"],
+    assignee_details: [],
+    labels: [],
+    label_details: [],
+    parent: null,
+  };
 
   // Reset mocks before each test
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("getIssue should call planeClient.request with correct parameters", async () => {
-    const mockIssue: Issue = {
-      id: mockIssueId,
-      name: "Test Issue",
-      description: "Desc",
-      description_html: "<p>Desc</p>",
-      priority: Priority.medium,
-      state: "state-1",
-      state_detail: null,
-      project: mockProjectId,
-      workspace: "test-workspace",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: "user-1",
-      updated_by: "user-1",
-      assignees: [],
-      assignee_details: [],
-      labels: [],
-      label_details: [],
-      parent: null,
-    };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockIssue);
+  it("getIssue should call planeClient with correct parameters", async () => {
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockIssue);
 
-    const result = await issueService.getIssue(mockProjectId, mockIssueId);
+    const result = await issueService.getIssue(mockIssueId);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}/issues/{issue_id}",
-      { method: "GET" },
-      {
-        project_id: mockProjectId,
-        issue_id: mockIssueId,
-      },
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/issues/${mockIssueId}`,
+      "GET",
     );
-    expect(result).toEqual(mockIssue);
+    expect(result).toEqual(createSuccessResponse(mockIssue));
   });
 
-  it("createIssue should call planeClient.request with correct parameters", async () => {
+  it("createIssue should call planeClient with correct parameters", async () => {
     const payload: CreateIssuePayload = {
       name: "New Issue",
       project: mockProjectId,
     };
     const mockCreatedIssue: Issue = {
+      ...mockIssue,
       id: "new-issue-789",
       name: "New Issue",
-      description: null,
-      description_html: null,
-      priority: null,
-      state: "state-1",
-      state_detail: null,
-      project: mockProjectId,
-      workspace: "test-workspace",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: "user-1",
-      updated_by: "user-1",
-      assignees: [],
-      assignee_details: [],
-      labels: [],
-      label_details: [],
-      parent: null,
     };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedIssue);
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedIssue);
 
-    const result = await issueService.createIssue(mockProjectId, payload);
+    const result = await issueService.createIssue(payload);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}/issues",
-      {
-        method: "POST",
-        body: JSON.stringify(payload), // Service ensures project is in payload
-      },
-      { project_id: mockProjectId },
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/issues`,
+      "POST",
+      payload,
     );
-    expect(result).toEqual(mockCreatedIssue);
+    expect(result).toEqual(createSuccessResponse(mockCreatedIssue));
   });
 
-  it("createIssue should add project ID to payload if missing", async () => {
-    const payload: Omit<CreateIssuePayload, "project"> = {
-      name: "New Issue No Project",
-    }; // Project missing
-    const expectedPayloadWithProject: CreateIssuePayload = {
-      ...payload,
-      project: mockProjectId,
-    };
-    const mockCreatedIssue: Issue = {
-      id: "new-issue-789",
-      name: "New Issue No Project",
-      description: null,
-      description_html: null,
-      priority: null,
-      state: "state-1",
-      state_detail: null,
-      project: mockProjectId,
-      workspace: "test-workspace",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: "user-1",
-      updated_by: "user-1",
-      assignees: [],
-      assignee_details: [],
-      labels: [],
-      label_details: [],
-      parent: null,
-    };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockCreatedIssue);
-
-    await issueService.createIssue(mockProjectId, payload as CreateIssuePayload);
-
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}/issues",
-      {
-        method: "POST",
-        body: JSON.stringify(expectedPayloadWithProject), // Check if project was added
-      },
-      { project_id: mockProjectId },
-    );
-  });
-
-  it("updateIssue should call planeClient.request with correct parameters", async () => {
-    const payload: UpdateIssuePayload = { name: "Updated Issue Name" };
-    const mockUpdatedIssue: Issue = {
-      id: mockIssueId,
+  it("updateIssue should call planeClient with correct parameters", async () => {
+    const payload: UpdateIssuePayload = {
+      issue_id: mockIssueId,
       name: "Updated Issue Name",
-      description: "Desc",
-      description_html: "<p>Desc</p>",
-      priority: Priority.medium,
-      state: "state-1",
-      state_detail: null,
-      project: mockProjectId,
-      workspace: "test-workspace",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: "user-1",
-      updated_by: "user-1",
-      assignees: [],
-      assignee_details: [],
-      labels: [],
-      label_details: [],
-      parent: null,
     };
-    (planeClient.request as ReturnType<typeof vi.fn>).mockResolvedValue(mockUpdatedIssue);
+    const mockUpdatedIssue: Issue = {
+      ...mockIssue,
+      name: "Updated Issue Name",
+    };
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockUpdatedIssue);
 
-    const result = await issueService.updateIssue(mockProjectId, mockIssueId, payload);
+    const result = await issueService.updateIssue(payload);
 
-    expect(planeClient.request).toHaveBeenCalledTimes(1);
-    expect(planeClient.request).toHaveBeenCalledWith(
-      "/workspaces/test-workspace/projects/{project_id}/issues/{issue_id}",
-      {
-        method: "PATCH",
-        body: JSON.stringify(payload),
-      },
-      { project_id: mockProjectId, issue_id: mockIssueId },
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/issues/${mockIssueId}`,
+      "PATCH",
+      { name: payload.name },
     );
-    expect(result).toEqual(mockUpdatedIssue);
+    expect(result).toEqual(createSuccessResponse(mockUpdatedIssue));
+  });
+
+  it("deleteIssue should call planeClient with correct parameters", async () => {
+    (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+    const result = await issueService.deleteIssue(mockProjectId, mockIssueId);
+
+    expect(planeClient).toHaveBeenCalledTimes(1);
+    expect(planeClient).toHaveBeenCalledWith(
+      `/workspaces/${WORKSPACE_SLUG}/projects/${mockProjectId}/issues/${mockIssueId}`,
+      "DELETE",
+    );
+    expect(result).toEqual(createSuccessResponse({ message: "Issue successfully deleted" }));
+  });
+
+  it("should handle errors properly", async () => {
+    const errorMessage = "API Error";
+    (planeClient as ReturnType<typeof vi.fn>).mockRejectedValue(new Error(errorMessage));
+
+    const result = await issueService.getIssue(mockIssueId);
+
+    expect(result).toEqual({
+      content: [{ type: "text", text: errorMessage }],
+      isError: true,
+    });
   });
 });

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { z } from "zod";
 
 // Custom validation error class

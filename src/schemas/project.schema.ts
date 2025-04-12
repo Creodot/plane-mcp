@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { z } from "zod";
 
 // Simple project ID schema

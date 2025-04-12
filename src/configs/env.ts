@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Environment configuration class for Plane API
  */

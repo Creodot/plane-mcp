@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Priority } from "@/types/issue.types.js";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 

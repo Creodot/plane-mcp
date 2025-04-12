@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 const PROJECT_IDENTIFIER_TOOL = {

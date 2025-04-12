@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { API_KEY, WORKSPACE_SLUG } from "./configs/env.js";
 
 /**

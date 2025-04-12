@@ -114,44 +114,11 @@ Updates an existing issue in a project.
 
 ### 🛠️ Installation
 
-1.  Clone the repository:
-    ```bash
-    # Replace with your fork or the main repo URL
-    git clone https://github.com/Creodot/plane-mcp-server.git
-    cd plane-mcp-server
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-
-### ⚙️ Configuration
-
-Create a `.env` file in the root of the project and add your Plane.so API Key and Workspace Slug:
-
-```dotenv
-# .env
-PLANE_API_KEY=your_plane_api_key_here
-PLANE_WORKSPACE_SLUG=your_workspace_slug_here
-
-# Optional: Specify if you are using a self-hosted Plane instance
-# PLANE_API_BASE_URL=https://your-self-hosted-plane.com/api/v1
-```
-
-🔑 Replace `your_plane_api_key_here` with your actual API key.
-🔑 Replace `your_workspace_slug_here` with your actual workspace slug.
+// to be improved
 
 ### 🚀 Usage
 
-1.  **Build the project:**
-    ```bash
-    npm run build
-    ```
-
-2.  **Start the server:**
-    ```bash
-    npm start
-    ```
+// to be improved
 
 The server will start and listen for requests on its standard input (stdin) and send responses to its standard output (stdout). You need to configure your MCP client (like Cursor, Claude App, etc.) to launch this server process when needed.
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { planeClient } from "@/plane-client.js";
-import { projectService } from "@/services/project.service.js";
-import type { CreateProjectPayload, Project } from "@/types/project.types.js";
+import { planeClient } from "../../src/plane-client.js";
+import { projectService } from "../../src/services/project.service.js";
+import type { CreateProjectPayload, Project } from "../../src/types/project.types.js";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 // These tests will actually call the Plane API

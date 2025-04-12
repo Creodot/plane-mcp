@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { planeClient } from "@/plane-client.js";
-import { issueService } from "@/services/issue.service.js";
-import { projectService } from "@/services/project.service.js";
-import { Priority } from "@/types/issue.types.js";
+import { planeClient } from "../src/plane-client.js";
+import { issueService } from "../src/services/issue.service.js";
+import { projectService } from "../src/services/project.service.js";
+import { Priority } from "../src/types/issue.types.js";
 
 /**
  * Simple script to test all endpoints and verify that they're working correctly

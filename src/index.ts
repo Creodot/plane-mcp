@@ -8,10 +8,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Get package.json data without experimental import
+// Get package.json data
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf8"));
+const packageJsonPath = path.join(__dirname, "../package.json");
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
 const server = new Server(
   {

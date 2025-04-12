@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0] - 2025-04-13
+
+### Added
+- Comprehensive integration testing framework for API endpoints verification
+- Integration tests for both project and issue endpoints
+- Quick endpoint verification utility (`check-endpoints.ts`) for rapid API health checks
+- GitHub Actions workflow for automated endpoint testing
+- Local testing configuration with environment variables support
+- New npm scripts for running tests: `test:integration`, `check:endpoints`, `test:local`, `check:local`, `test:debug`
+
+### Changed
+- Enhanced error reporting in endpoint tests for better debugging
+- Updated test documentation with detailed instructions for local and CI execution
+
 ## [0.3.1] - 2025-04-13
 
 ### Changed

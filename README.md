@@ -117,11 +117,11 @@ Updates an existing issue in a project.
 
 ### 🛠️ Installation
 
-// to be improved
+```bash
+npm install
+```
 
 ### 🚀 Usage
-
-// to be improved
 
 The server will start and listen for requests on its standard input (stdin) and send responses to its standard output (stdout). You need to configure your MCP client (like Cursor, Claude App, etc.) to launch this server process when needed.
 
@@ -150,8 +150,6 @@ Your assistant will use the appropriate tools (`plane_get_issue`, `plane_create_
 This section is for developers who want to contribute to the project, run tests, or use the development environment.
 
 ### Development 🧑‍💻
-
-To run the server in development mode with automatic rebuilding and restarting on file changes (thanks to `node --watch`):
 
 ```bash
 npm run dev
@@ -206,19 +204,51 @@ To add a new tool:
 
 ### Testing 🧪
 
-Run the full test suite:
+The project includes multiple types of tests:
+
+#### Unit Tests
+
+Run unit tests (fast, no API calls):
 
 ```bash
+npm run test:unit
+```
+
+#### Integration Tests
+
+These tests make real API calls, so they need API credentials:
+
+1. Create a `.env.test` file with:
+```
+API_KEY=your_plane_api_key
+WORKSPACE_SLUG=your_workspace_slug
+```
+
+2. Run integration tests:
+```bash
+npm run test:local
+```
+
+3. Quick endpoint check:
+```bash
+npm run check:local
+```
+
+#### Pre-commit Hooks
+
+The pre-commit hooks only run linting and formatting, not tests. This ensures:
+- Faster commits
+- No API call requirements during development
+- No need for API credentials during regular development
+
+When you want to run tests manually:
+```bash
+# Unit tests only
+npm run test:unit
+
+# All tests including integration (needs API credentials)
 npm test
 ```
-
-Run tests in watch mode during development:
-
-```bash
-npm run test:watch
-```
-
-Tests use Vitest and are located in the `tests/` directory, mirroring the structure of the `src/` directory.
 
 ### Linting and Formatting ✨
 

@@ -164,7 +164,7 @@ async function checkAllEndpoints() {
   await runTest(
     "Get Issue",
     async () => {
-      const response = await issueService.getIssue(testData.issueId);
+      const response = await issueService.getIssue(testData.projectId, testData.issueId);
 
       if (response.isError) {
         throw new Error(`Failed to get issue: ${response.content[0]?.text}`);
@@ -179,6 +179,7 @@ async function checkAllEndpoints() {
     async () => {
       const response = await issueService.updateIssue({
         issue_id: testData.issueId,
+        project: testData.projectId,
         name: "Updated Test Issue",
       });
 

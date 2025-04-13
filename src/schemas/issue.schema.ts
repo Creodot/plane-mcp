@@ -5,6 +5,7 @@ import { z } from "zod";
 
 // Simple issue ID schema
 export const IssueIdSchema = z.object({
+  project_id: z.string().uuid(),
   issue_id: z.string().uuid(),
 });
 
@@ -91,6 +92,7 @@ export const UpdateIssueArgsSchema = z.object({
   description_html: z.string().nullable().optional(),
   priority: PriorityEnum.nullable().optional(),
   state: z.string().uuid().nullable().optional(),
+  project: z.string().uuid(),
   assignees: z.array(z.string().uuid()).optional(),
   labels: z.array(z.string().uuid()).optional(),
   parent: z.string().uuid().nullable().optional(),

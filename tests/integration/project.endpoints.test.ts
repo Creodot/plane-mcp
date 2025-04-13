@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-import { planeClient } from "../../src/plane-client.js";
 import { projectService } from "../../src/services/project.service.js";
 import type { CreateProjectPayload, Project } from "../../src/types/project.types.js";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
 // These tests will actually call the Plane API
 // They are designed to verify that the API is functioning correctly

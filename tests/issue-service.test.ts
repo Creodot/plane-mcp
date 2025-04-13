@@ -55,10 +55,13 @@ describe("IssueService", () => {
   it("getIssue should call planeClient with correct parameters", async () => {
     (planeClient as ReturnType<typeof vi.fn>).mockResolvedValue(mockIssue);
 
-    const result = await issueService.getIssue(mockIssueId);
+    const result = await issueService.getIssue(mockProjectId, mockIssueId);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(`/issues/${mockIssueId}`, "GET");
+    expect(planeClient).toHaveBeenCalledWith(
+      `/projects/${mockProjectId}/issues/${mockIssueId}`,
+      "GET",
+    );
     expect(result).toEqual(createSuccessResponse(mockIssue));
   });
 
@@ -77,7 +80,7 @@ describe("IssueService", () => {
     const result = await issueService.createIssue(payload);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith("/issues", "POST", payload);
+    expect(planeClient).toHaveBeenCalledWith(`/projects/${mockProjectId}/issues`, "POST", payload);
     expect(result).toEqual(createSuccessResponse(mockCreatedIssue));
   });
 
@@ -85,6 +88,7 @@ describe("IssueService", () => {
     const payload: UpdateIssuePayload = {
       issue_id: mockIssueId,
       name: "Updated Issue Name",
+      project: mockProjectId,
     };
     const mockUpdatedIssue: Issue = {
       ...mockIssue,
@@ -95,9 +99,13 @@ describe("IssueService", () => {
     const result = await issueService.updateIssue(payload);
 
     expect(planeClient).toHaveBeenCalledTimes(1);
-    expect(planeClient).toHaveBeenCalledWith(`/issues/${mockIssueId}`, "PATCH", {
-      name: payload.name,
-    });
+    expect(planeClient).toHaveBeenCalledWith(
+      `/projects/${mockProjectId}/issues/${mockIssueId}`,
+      "PATCH",
+      {
+        name: payload.name,
+      },
+    );
     expect(result).toEqual(createSuccessResponse(mockUpdatedIssue));
   });
 
@@ -118,7 +126,7 @@ describe("IssueService", () => {
     const errorMessage = "API Error";
     (planeClient as ReturnType<typeof vi.fn>).mockRejectedValue(new Error(errorMessage));
 
-    const result = await issueService.getIssue(mockIssueId);
+    const result = await issueService.getIssue(mockProjectId, mockIssueId);
 
     expect(result).toEqual({
       content: [{ type: "text", text: errorMessage }],

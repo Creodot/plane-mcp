@@ -101,7 +101,7 @@ describe("Issue Endpoints Integration Tests", () => {
       return;
     }
 
-    const response = await issueService.getIssue(createdIssueId);
+    const response = await issueService.getIssue(testProjectId, createdIssueId);
 
     expect(response.isError).toBe(false);
     expect(response.content).toHaveLength(1);
@@ -123,6 +123,7 @@ describe("Issue Endpoints Integration Tests", () => {
 
     const updatedName = "Updated Test Issue";
     const response = await issueService.updateIssue({
+      project: testProjectId,
       issue_id: createdIssueId,
       name: updatedName,
     });

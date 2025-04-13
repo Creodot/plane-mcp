@@ -17,11 +17,12 @@ export class IssueService {
   /**
    * Retrieves a specific issue.
    *
+   * @param projectId - The ID of the project containing the issue.
    * @param issueId - The ID of the issue to retrieve.
    * @returns The PlaneIssue object.
    */
-  async getIssue(issueId: string): Promise<ToolResponse> {
-    const endpoint = `/issues/${issueId}`;
+  async getIssue(projectId: string, issueId: string): Promise<ToolResponse> {
+    const endpoint = `/projects/${projectId}/issues/${issueId}`;
 
     try {
       const issue = await planeClient<Issue>(endpoint, "GET");
@@ -40,7 +41,7 @@ export class IssueService {
   async createIssue(payload: CreateIssuePayload): Promise<ToolResponse> {
     // Validate payload
     const validPayload = validateWithSchema(CreateIssueSchema, payload);
-    const endpoint = "/issues";
+    const endpoint = `/projects/${payload.project}/issues`;
 
     try {
       const issue = await planeClient<Issue>(endpoint, "POST", validPayload);
@@ -60,8 +61,9 @@ export class IssueService {
   async updateIssue(payload: UpdateIssuePayload): Promise<ToolResponse> {
     // Validate payload
     const validPayload = validateWithSchema(UpdateIssueSchema, payload);
-    const { issue_id, ...updateData } = validPayload;
-    const endpoint = `/issues/${issue_id}`;
+    // Destructure and remove both issue_id and project from update data
+    const { issue_id, project, ...updateData } = validPayload as UpdateIssuePayload;
+    const endpoint = `/projects/${project}/issues/${issue_id}`;
 
     try {
       const issue = await planeClient<Issue>(endpoint, "PATCH", updateData);

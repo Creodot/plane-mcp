@@ -2,7 +2,7 @@
 
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
-const PROJECT_IDENTIFIER_TOOL = {
+export const PROJECT_IDENTIFIER_TOOL = {
   listProjects: "list-projects",
   getProject: "get-project",
   createProject: "create-project",

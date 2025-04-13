@@ -3,7 +3,7 @@
 import { Priority } from "@/types/issue.types.js";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
-const ISSUE_IDENTIFIER_TOOL = {
+export const ISSUE_IDENTIFIER_TOOL = {
   getIssue: "get-issue",
   createIssue: "create-issue",
   updateIssue: "update-issue",
@@ -42,6 +42,10 @@ const CREATE_ISSUE_TOOL: Tool = {
       name: {
         type: "string",
         description: "Name of the issue",
+      },
+      project: {
+        type: "string",
+        description: "The ID of the project where the issue will be created",
       },
       description: {
         type: "string",

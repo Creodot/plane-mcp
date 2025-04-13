@@ -15,6 +15,24 @@ import type { ToolResponse } from "@/types/tools.types.js";
  */
 export class IssueService {
   /**
+   * Lists all issues within a project.
+   *
+   * @param projectId - The ID of the project containing the issues.
+   * @returns An array of Issue objects.
+   */
+  async listIssues(projectId: string): Promise<ToolResponse> {
+    const endpoint = `/projects/${projectId}/issues`;
+
+    try {
+      const issues = await planeClient<Issue[]>(endpoint, "GET");
+
+      return createSuccessResponse(issues);
+    } catch (error) {
+      return createErrorResponse(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
    * Retrieves a specific issue.
    *
    * @param projectId - The ID of the project containing the issue.

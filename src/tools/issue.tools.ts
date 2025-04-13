@@ -8,6 +8,22 @@ export const ISSUE_IDENTIFIER_TOOL = {
   createIssue: "create-issue",
   updateIssue: "update-issue",
   deleteIssue: "delete-issue",
+  listIssues: "list-issues",
+};
+
+const LIST_ISSUES_TOOL: Tool = {
+  name: ISSUE_IDENTIFIER_TOOL.listIssues,
+  description: "List all issues in a project",
+  inputSchema: {
+    type: "object",
+    properties: {
+      project_id: {
+        type: "string",
+        description: "The ID of the project to list issues from",
+      },
+    },
+    required: ["project_id"],
+  },
 };
 
 const GET_ISSUE_TOOL: Tool = {
@@ -189,4 +205,5 @@ export const ISSUE_TOOLS = {
   DELETE_ISSUE_TOOL,
   GET_ISSUE_TOOL,
   UPDATE_ISSUE_TOOL,
+  LIST_ISSUES_TOOL,
 };

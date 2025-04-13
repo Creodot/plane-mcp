@@ -9,6 +9,11 @@ export const IssueIdSchema = z.object({
   issue_id: z.string().uuid(),
 });
 
+// Project ID schema for listing issues
+export const ListIssuesSchema = z.object({
+  project_id: z.string().uuid(),
+});
+
 // Combined project and issue ID schema
 export const ProjectAndIssueIdSchema = z.object({
   project_id: z.string().uuid(),

@@ -3,6 +3,7 @@
 import {
   CreateIssueArgsSchema,
   IssueIdSchema,
+  ListIssuesSchema,
   ProjectAndIssueIdSchema,
   UpdateIssueArgsSchema,
 } from "@/schemas/issue.schema.js";
@@ -37,6 +38,7 @@ export function registerAllTools(server: Server) {
       PROJECT_TOOLS.DELETE_PROJECT_TOOL,
 
       // Issue tools
+      ISSUE_TOOLS.LIST_ISSUES_TOOL,
       ISSUE_TOOLS.CREATE_ISSUE_TOOL,
       ISSUE_TOOLS.GET_ISSUE_TOOL,
       ISSUE_TOOLS.UPDATE_ISSUE_TOOL,
@@ -95,6 +97,10 @@ export function registerToolHandlers(server: Server) {
         }
 
         // Issue tools
+        case ISSUE_IDENTIFIER_TOOL.listIssues: {
+          const validArgs = validateWithSchema(ListIssuesSchema, args);
+          return await issueService.listIssues(validArgs.project_id);
+        }
         case ISSUE_IDENTIFIER_TOOL.createIssue: {
           const validArgs = validateWithSchema(CreateIssueArgsSchema, args);
 
